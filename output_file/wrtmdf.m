@@ -16,8 +16,19 @@ function wrtmdf(thk,vp,vs,den,qp,qs,fname)
 % the unit of thickness is km; the unit of velocity is km/s; the unit of
 % density is g/cm^3.
 
-if nargin<7
-    fname='model'; % set default name
+nl=max(size(thk)); % number of layers
+
+% set default values
+if  nargin<7
+    fname='model'; % set default output name
+end
+
+if isempty(qp)
+    qp=10000*ones(nl,1);
+end
+
+if isempty(qs)
+    qs=10000*ones(nl,1);
 end
 
 % transfer unit: m -> km, m/s -> km/s, kg/m^3 -> g/cm^3
@@ -28,7 +39,6 @@ tden=den/1000; % kg/m^3 -> g/cm^3
 
 fnm=fname; % save data file into a specified folder
 fid1=fopen(fnm,'wt');
-nl=max(size(thk)); % number of layers
 
 for in=1:nl
     fprintf(fid1,'%.4f  %.4f  %.4f  %.4f  %.2f  %.2f  \n',tthk(in),tvs(in),tvp(in),tden(in),qs(in),qp(in));

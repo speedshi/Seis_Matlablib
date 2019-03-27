@@ -5,7 +5,7 @@ function q=quiver3c(X,Y,Z,U,V,W,CVA)
 q=quiver3(X,Y,Z,U,V,W);
 
 % Get the current colormap
-currentColormap = colormap(gca);
+currentColormap = colormap;
 
 % Now determine the color to make each arrow using a colormap
 [~, ~, ind] = histcounts(CVA, size(currentColormap, 1));

@@ -1,2 +1,5 @@
 # ignore download matlab functions
 ./downloads/*
+
+# ignore files in the colormaps folder
+./colormaps/*

@@ -10,8 +10,10 @@ function seisrsdisp(data,dt)
 figure;
 for ii=1:nrec
     drm=data(:,ii)-mean(data(:,ii)); % remove the mean values for each trace, i.e. remove the trend of each trace
-    if max(abs(drm))~=0
+    if max(abs(drm))>eps
         dd=drm/max(abs(drm))+ii;
+    else
+        dd=drm+ii;
     end
     if nargin>1
         plot((0:nt-1)*dt,dd,'k','linewidth',1.1); hold on;

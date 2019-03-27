@@ -1,4 +1,4 @@
-function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup)
+function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup,rmksize,smksize,wmksize)
 % This function is used to plot the geometry of the model and recording arrays.
 % Right-hand coordinate systerm in Cartesian coordinate, with X-North,
 % Y-East, Z-Vertical down. Unit: meter.
@@ -18,7 +18,10 @@ function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup)
 % sara: shows the migration searching area (m), is 3*2 matrix:
 % row 1: X range; row 2: Y range; row 3: Z range;
 % soup: position of source points(X-Y-Z) (m), ns*3, could be more than
-% one source, each row is a source.
+% one source, each row is a source;
+% rmksize: markersize of the surface receivers;
+% smksize: markersize of the sources;
+% wmksize: markersize of the downhole receivers.
 % OUTPUT---------------------------------------------------------
 % Three figures show the model geometry and surface projection
 % and 2 vertical projection of sources and downhole arrays.
@@ -28,11 +31,24 @@ if nargin<8
     rwlz=[];
     srar=0;
     soup=[];
+    rmksize=6;
+    smksize=6;
+    wmksize=4;
 elseif nargin<10
     srar=0;
     soup=[];
+    rmksize=6;
+    smksize=6;
+    wmksize=4;
 elseif nargin<11
     soup=[];
+    rmksize=6;
+    smksize=6;
+    wmksize=4;
+elseif nargin<12
+    rmksize=6;
+    smksize=6;
+    wmksize=4;
 end
 
 % transfer meters to kilometers
@@ -71,15 +87,15 @@ plot3(xg,yg,zg1,'k',xg,yg,zg2,'k');hold on; % plot the model
 axis tight;
 if ~isempty(soup)
     for is=1:ns
-        plot3(soup(is,1),soup(is,2),soup(is,3),'rp');hold on; % plot the source point
+        plot3(soup(is,1),soup(is,2),soup(is,3),'rp','markersize',smksize);hold on; % plot the source point
     end
 end
-plot3(recx,recy,recz,'b.');hold on; % plot the surface arrays
+plot3(recx,recy,recz,'b.','markersize',rmksize);hold on; % plot the surface arrays
 if ~isempty(rwlxy)
     for iw=1:ndh
         rwlx=rwlpx(iw)*ones(size(rwlz(iw,:)));
         rwly=rwlpy(iw)*ones(size(rwlz(iw,:)));
-        plot3(rwlx,rwly,rwlz(iw,:),'bv','markersize',4);hold on; % plot the down hole arrays
+        plot3(rwlx,rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % plot the down hole arrays
     end
 end
 for i=1:nly
@@ -103,15 +119,15 @@ view([116,22]);
 
 % plot the surface projection of sources, surface and downhole arrays
 figure;
-plot(recx,recy,'b.'); hold on; % plot the projection of surface arrays
+plot(recx,recy,'b.','markersize',rmksize); hold on; % plot the projection of surface arrays
 if ~isempty(soup)
     for is=1:ns
-        plot(soup(is,1),soup(is,2),'rp');hold on; % sources
+        plot(soup(is,1),soup(is,2),'rp','markersize',smksize);hold on; % sources
     end
 end
 if ~isempty(rwlxy)
     for iw=1:ndh
-        plot(rwlpx(iw),rwlpy(iw),'bv');hold on; % downhole arrays
+        plot(rwlpx(iw),rwlpy(iw),'bv','markersize',wmksize);hold on; % downhole arrays
     end
 end
 axis equal;
@@ -127,16 +143,16 @@ view(-90,90); % vertical direction is X axis, horizontal direction is Y axis.
 % plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to X axis.
 figure;
-plot(recy,recz,'b.');hold on; % plot the projection of surface arrays
+plot(recy,recz,'b.','markersize',rmksize);hold on; % plot the projection of surface arrays
 if ~isempty(soup)
     for is=1:ns
-        plot(soup(is,2),soup(is,3),'rp');hold on; % sources
+        plot(soup(is,2),soup(is,3),'rp','markersize',smksize);hold on; % sources
     end
 end
 if ~isempty(rwlxy)
     for iw=1:ndh
         rwly=rwlpy(iw)*ones(size(rwlz(iw,:)));
-        plot(rwly,rwlz(iw,:),'bv');hold on; % downhole arrays
+        plot(rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
     end
 end
 for i=1:nly
@@ -153,16 +169,16 @@ set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 % plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to Y axis.
 figure;
-plot(recx,recz,'b.');hold on; % plot the projection of surface arrays
+plot(recx,recz,'b.','markersize',rmksize);hold on; % plot the projection of surface arrays
 if ~isempty(soup)
     for is=1:ns
-        plot(soup(is,1),soup(is,3),'rp');hold on; % sources
+        plot(soup(is,1),soup(is,3),'rp','markersize',smksize);hold on; % sources
     end
 end
 if ~isempty(rwlxy)
     for iw=1:ndh
         rwlx=rwlpx(iw)*ones(size(rwlz(iw,:)));
-        plot(rwlx,rwlz(iw,:),'bv');hold on; % downhole arrays
+        plot(rwlx,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
     end
 end
 for i=1:nly
