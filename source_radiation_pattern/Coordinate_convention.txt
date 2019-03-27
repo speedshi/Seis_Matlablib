@@ -1,0 +1,11 @@
+Note that in this program which is used to calculate the radiation pattern of a moment tensor source,
+the convention of coordinate systerm follows the definition in Aki & Richards 2002, Fig 4.20 and BOX 4.4.
+
+Right-hand coordinate systerm in Cartesian coordinate.
+
+Some important parameters related to the Coordinate systerm:
+theta: zenith angle, measured form the positive Z-axis, range: [0, pi];
+phi: azimuth angle, measured from the positive X-axis to positive Y-axis (positive X-axis is 0, positive Y-axis is pi/2), range: [0, 2pi).
+
+For "measured from the positive X-axis to positive Y-axis", 
+we can also say "measured counterclockwise from the positive X-axis seen from the positive Z-axis".

@@ -1,0 +1,42 @@
+Note the coordinate systerm follows the definition in Aki & Richards 2002, Fig 4.20.
+Right-hand coordinate systerm in Cartesian coordinate. X: North; Y: East; Z: vertical down.
+
+(1) source file
+0.001                        | float. Time sampling interval of the modeling and source time function, second.
+4000                         | integer. Number of time samples of the modeling and source time funciont.
+1                            | integer. Number of sources
+2500      2500      1050     | float-float-float. X-Y-Z positions of the source 1, meter.
+1                            | integer. Type of source time function. 0: input from file; 1: Ricker wavelet; -1: impulse (calculate the Green's function, the next line is not important in this situation).
+40                           | characters or float. If source time function is input from file, this line shows the file name. If source time function is theoretical wavelet, this line shows the dominant frequency, Hz.
+0                            | float, origin time of the source, second. Used to delay the source time function.
+2e2                          | float. Scalar moment, N*m.
+0                            | integer. Input type of seismic moment tensor. 0: use fault geometries (strike-rake-dip) to input moment tensor; 1: directly input seismic moment tensor.
+45     45     60             | float-float-float or float-float-float-float-float-float. The fault geometry in degree: strike-rake-dip. Or seismic moment tensor: mxx-myy-mzz-mxy-mxz-myz.
+...                          | float-float-float. X-Y-Z positions of the source 2, meter.
+...                          | ...
+...                          | ...
+
+
+(2) receiver file
+27                           | integer. Number of receivers
+800      800      800        | float-float-float. X-Y-Z positions of the receiver 1, meter.
+800      800      0          | float-float-float. X-Y-Z positions of the receiver 2, meter.
+800      800     -800        | float-float-float. X-Y-Z positions of the receiver 3, meter.
+...
+...
+...
+
+
+(3) model file, homogeneous model or layered model. If there is only one layer, it is a homogeneous model. For layered models, the bottom layer is assumed to be a half space.
+0                                                         | float. Reference starting depth (free surface) in meter, can be negtive or positive. Normally is 0, which means the depth of free surface is 0.
+100    3500      2000      2000      1000      1000       | float-float-float-float. Thickness(m)-Vp(m/s)-Vs(m/s)-density(kg/m^3)-Qp(attenuation of P wave)-Qs(attenuation of S wave) of the layer 1. Qp and Qs are optional parameters.
+...                                                       | float-float-float-float. Thickness(m)-Vp(m/s)-Vs(m/s)-density(kg/m^3)-Qp(attenuation of P wave)-Qs(attenuation of S wave) of the layer 2. Qp and Qs are optional parameters.
+
+
+(4) source time function file
+0.11                                        | value of wavelet at the time sample 1
+0.2                                         | value of wavelet at the time sample 2             
+0.14                                        | value of wavelet at the time sample 3
+0.01                                        | value of wavelet at the time sample 4
+-0.1                                        | value of wavelet at the time sample 5
+...                                         | value of wavelet at the time sample 6
