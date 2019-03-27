@@ -1,5 +1,5 @@
+# Don't track content of the following folders
 # ignore download matlab functions
-./downloads/*
-
+downloads/
 # ignore files in the colormaps folder
-./colormaps/*
+colormaps/
