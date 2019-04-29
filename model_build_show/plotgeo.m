@@ -3,11 +3,12 @@ function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup,rmksize,smksi
 % Right-hand coordinate systerm in Cartesian coordinate, with X-North,
 % Y-East, Z-Vertical down. Unit: meter.
 % INPUT--------------------------------------------------------
-% xc: boundry of X axis of the model (m);
-% yc: boundry of Y axis of the model (m);
-% zc: boundry of Z axis of the model (m);
-% lydp: depth of each layer surface, exclude the top layer (free
-% surface) and the bottom layer (m);
+% xc: boundry of X axis of the model (m), vector (2*1), can be void vector;
+% yc: boundry of Y axis of the model (m), vector (2*1), can be void vector;
+% zc: boundry of Z axis of the model (m), vector (2*1), can be void vector;
+% lydp: depth of each layer interface, should include the inerface of the 
+% free surface (m). For free surface: 0-->sea-level, (+)positive-->below
+% sea-level, (-)negative-->above sea-level;
 % recx: X coordinates of surface arrays (m), a vector, nr*1;
 % recy: Y coordinates of surface arrays (m), a vector, nr*1;
 % recz: Z coordinates of surface arrays (m), a vector, nr*1;
@@ -29,13 +30,13 @@ function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup,rmksize,smksi
 if nargin<8
     rwlxy=[];
     rwlz=[];
-    srar=0;
+    srar=[];
     soup=[];
     rmksize=6;
     smksize=6;
     wmksize=4;
 elseif nargin<10
-    srar=0;
+    srar=[];
     soup=[];
     rmksize=6;
     smksize=6;
@@ -49,6 +50,71 @@ elseif nargin<12
     rmksize=6;
     smksize=6;
     wmksize=4;
+end
+
+if isempty(rwlxy)
+    wxmin=[];
+    wxmax=[];
+    wymin=[];
+    wymax=[];
+else
+    wxmin=min(rwlxy(:,1));
+    wxmax=max(rwlxy(:,1));
+    wymin=min(rwlxy(:,2));
+    wymax=max(rwlxy(:,2));
+end
+
+if isempty(srar)
+    axmin=[];
+    axmax=[];
+    aymin=[];
+    aymax=[];
+    azmin=[];
+    azmax=[];
+else
+    axmin=min(srar(1,:));
+    axmax=max(srar(1,:));
+    aymin=min(srar(2,:));
+    aymax=max(srar(2,:));
+    azmin=min(srar(3,:));
+    azmax=max(srar(3,:));
+end
+
+if isempty(soup)
+    sxmin=[];
+    sxmax=[];
+    symin=[];
+    symax=[];
+    szmin=[];
+    szmax=[];
+else
+    sxmin=min(soup(:,1));
+    sxmax=max(soup(:,1));
+    symin=min(soup(:,2));
+    symax=max(soup(:,2));
+    szmin=min(soup(:,3));
+    szmax=max(soup(:,3));
+end
+
+if isempty(xc)
+    min_temp=min([recx(:); wxmin; sxmin; axmin]);
+    max_temp=max([recx(:); wxmax; sxmax; axmax]);
+    xc(1)= min_temp-0.1*abs(max_temp-min_temp);    
+    xc(2)= max_temp+0.1*abs(max_temp-min_temp);
+end
+
+if isempty(yc)
+    min_temp=min([recy(:); wymin; symin; aymin]);
+    max_temp=max([recy(:); wymax; symax; aymax]);
+    yc(1)= min_temp-0.1*abs(max_temp-min_temp);    
+    yc(2)= max_temp+0.1*abs(max_temp-min_temp);
+end
+
+if isempty(zc)
+    min_temp=min([recz(:); min(rwlz(:)); szmin; azmin; lydp(1)]);
+    max_temp=max([recz(:); max(rwlz(:)); szmax; azmax; lydp(end)]);
+    zc(1)= min_temp;    
+    zc(2)= max_temp+0.1*abs(max_temp-min_temp);
 end
 
 % transfer meters to kilometers
@@ -109,7 +175,7 @@ box on;set(gca,'BoxStyle','full');
 set(gca,'Xdir','reverse');set(gca,'Zdir','reverse');
 set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');set(gca,'ZMinorGrid','on');
 set(gca,'MinorGridLineStyle',':');
-if srar~=0
+if ~isempty(srar)
     cxx=[srar(1,1) srar(1,1) srar(1,1) srar(1,2) srar(1,2) srar(1,1);srar(1,1) srar(1,2) srar(1,1) srar(1,1) srar(1,2) srar(1,1);srar(1,1) srar(1,2) srar(1,2) srar(1,1) srar(1,2) srar(1,2);srar(1,1) srar(1,1) srar(1,2) srar(1,2) srar(1,2) srar(1,2)];
     cyy=[srar(2,1) srar(2,2) srar(2,1) srar(2,1) srar(2,1) srar(2,1);srar(2,2) srar(2,2) srar(2,2) srar(2,1) srar(2,2) srar(2,2);srar(2,2) srar(2,2) srar(2,2) srar(2,1) srar(2,2) srar(2,2);srar(2,1) srar(2,2) srar(2,1) srar(2,1) srar(2,1) srar(2,1)];
     czz=[srar(3,1) srar(3,1) srar(3,1) srar(3,1) srar(3,1) srar(3,2);srar(3,1) srar(3,1) srar(3,1) srar(3,1) srar(3,1) srar(3,2);srar(3,2) srar(3,2) srar(3,1) srar(3,2) srar(3,2) srar(3,2);srar(3,2) srar(3,2) srar(3,1) srar(3,2) srar(3,2) srar(3,2)];
@@ -133,7 +199,7 @@ end
 axis equal;
 xlim([xc(1) xc(2)]);
 ylim([yc(1) yc(2)]);
-if srar~=0
+if ~isempty(srar)
     fill([srar(1,1) srar(1,2) srar(1,2) srar(1,1)],[srar(2,1) srar(2,1) srar(2,2) srar(2,2)],'y','linestyle','none','FaceAlpha',0.35);
 end
 axis ij;xlabel('X (km)');ylabel('Y (km)');
@@ -160,7 +226,7 @@ for i=1:nly
 end
 axis equal;
 xlim([yc(1) yc(2)]); ylim([zc(1) zc(2)]);
-if srar~=0
+if ~isempty(srar)
     fill([srar(2,1) srar(2,2) srar(2,2) srar(2,1)],[srar(3,1) srar(3,1) srar(3,2) srar(3,2)],'y','linestyle','none','FaceAlpha',0.35);
 end
 axis ij;xlabel('Y (km)');ylabel('Z (km)');
@@ -186,7 +252,7 @@ for i=1:nly
 end
 axis equal;
 xlim([xc(1) xc(2)]); ylim([zc(1) zc(2)]);
-if srar~=0
+if ~isempty(srar)
     fill([srar(1,1) srar(1,2) srar(1,2) srar(1,1)],[srar(3,1) srar(3,1) srar(3,2) srar(3,2)],'y','linestyle','none','FaceAlpha',0.35);
 end
 axis ij;xlabel('X (km)');ylabel('Z (km)');

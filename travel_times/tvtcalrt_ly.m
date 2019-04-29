@@ -3,6 +3,16 @@ function [tvt,tkfa,rayl]=tvtcalrt_ly(vel,thk,soup,recp)
 % ray-length in layered isotropic media using ray tracing. The source is placed
 % at target layer, receiver is placed at the free surface or near free
 % surface. The receiver position locate above the source position.
+%
+% Note here the free surface of the velocity model is assume to be 0 (the
+% sea-level). Due to the Z axis is vertical down, negative Z values mean
+% above the sea-level; and positive values mean below the sea-level (i.e.
+% depth). Therefore, the velocity above the sea-level is actually
+% undefined. This program currently do not check whether the stations and
+% sources are placed above the sea-level (undefined velocity). However, the
+% program now just assumes the velocity above the sea-level equals to the
+% velocity of the first layer.
+%
 % Usage:
 % input:----------------------------------------------------
 % 1 vel: layered velocity model, a vector: nly*1, unit: km/s;
