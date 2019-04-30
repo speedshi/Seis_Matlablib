@@ -45,7 +45,7 @@ stations.name{1}=snamelist{1};
 nr=1;
 
 % Obtain Cartesian coordinates of the station
-[stations.north(1),stations.east(1),stations.depth(1)]=geod2cart(stall.Latitude(1),stall.Longitude(1),stall.Elevation(1)-stall.Depth(1));
+[stations.east(1),stations.north(1),stations.depth(1)]=geod2cart(stall.Latitude(1),stall.Longitude(1),stall.Elevation(1)-stall.Depth(1));
 
 for ii=2:nnr
     
@@ -62,7 +62,7 @@ for ii=2:nnr
         stations.name{nr}=snamelist{nr};
         
         % Obtain Cartesian coordinates of the stations
-        [stations.north(nr),stations.east(nr),stations.depth(nr)]=geod2cart(stall.Latitude(ii),stall.Longitude(ii),stall.Elevation(ii)-stall.Depth(ii));
+        [stations.east(nr),stations.north(nr),stations.depth(nr)]=geod2cart(stall.Latitude(ii),stall.Longitude(ii),stall.Elevation(ii)-stall.Depth(ii));
     end
     
 end

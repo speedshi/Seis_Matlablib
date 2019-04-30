@@ -1,4 +1,4 @@
-function [north,east,depth]=geod2cart(latitude,longitude,elevation)
+function [east,north,depth]=geod2cart(latitude,longitude,elevation)
 % This function is used to convert geodetic coordinate (latitude,
 % longitude, elevation) to Cartesian coordinate (North, East, Vertical down).
 % For the axis of Vertical down, the sea-level is 0, and above the
@@ -16,8 +16,8 @@ function [north,east,depth]=geod2cart(latitude,longitude,elevation)
 % elevation: elevation in meter, can be scalar or a vector.
 %
 % OUTPUT-------------------------------------------------------------
-% north: north component in meter;
 % east: east component in meter;
+% north: north component in meter;
 % depth: vertical down component in meter.
 
 latitude=latitude(:);
@@ -34,4 +34,4 @@ utmstruct = defaultm(utmstruct);
 
 
 % convert coordinate. Note transfer elevation to depth by '*-1'
-[north,east,depth] = mfwdtran(utmstruct,latitude,longitude,-elevation);
+[east,north,depth] = mfwdtran(utmstruct,latitude,longitude,-elevation);
