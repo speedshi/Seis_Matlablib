@@ -1,4 +1,4 @@
-function mgrsprofdisp(cata,migloc,tarxr,taryr,tarzr,trace,thrsd,bdist)
+function mgrsprofdisp(cata,migloc,search,trace,thrsd,bdist)
 % This function is used to display the XY, XZ and YZ profiles of the
 % location results and also compared with the events in the catalogue.
 % Note the unit of the input parameters should be consistent.
@@ -6,9 +6,10 @@ function mgrsprofdisp(cata,migloc,tarxr,taryr,tarzr,trace,thrsd,bdist)
 % Input:----------------------------------------------------
 % cata: events locations in the catalogue, neca*4, Origin_time-X-Y-Z;
 % migloc: our event location results, nevt*5, Origin_time-X-Y-Z-Coherency;
-% tarxr: coordinate limit (range) in the X direction;
-% taryr: coordinate limit (range) in the Y direction;
-% tarzr: coordinate limit (range) in the Z direction;
+% search: matlab structure, specify the searching (migration) area;
+% search.north: vector, 1*2, tarxr, coordinate limit (range) in the X direction;
+% search.east: vector, 1*2, taryr, coordinate limit (range) in the Y direction;
+% search.depth: vector, 1*2, tarzr, coordinate limit (range) in the Z direction;
 % trace: matlab structure, contains station information;
 % trace.name: station names;
 % trace.north: north coordinates;
@@ -19,10 +20,14 @@ function mgrsprofdisp(cata,migloc,tarxr,taryr,tarzr,trace,thrsd,bdist)
 % bdist: boundary value, do not show the points which lie within the limit of boundaries.
 
 % set default values
-if nargin==6
+if nargin==3
+    trace=[];
     thrsd=0;
     bdist=0;
-elseif nargin==7
+elseif nargin==4
+    thrsd=0;
+    bdist=0;
+elseif nargin==5
     bdist=0;
 end
 
@@ -30,16 +35,25 @@ if size(migloc,2)<5
     migloc(:,5)=1;
 end
 
+% get migration boundary
+tarxr=search.north; % X-North range
+taryr=search.east; % Y-East range
+tarzr=search.depth; % Z-Depth range
+
 % find the located seismic events which fulfill the requirements
 migloc=migloc(migloc(:,5)>thrsd & migloc(:,2)>=tarxr(1)+bdist & migloc(:,2)<=tarxr(2)-bdist & migloc(:,3)>=taryr(1)+bdist & migloc(:,3)<=taryr(2)-bdist & migloc(:,4)>=tarzr(1)+bdist & migloc(:,4)<=tarzr(2)-bdist,:);
 
 bsize=16; % the size of the ball in the figure
 
-if ~isempty(trace.north)
+if ~isempty(trace) && ~isempty(trace.north)
     stname=trace.name; % name of receivers
     recpx=trace.north; % X coordinate of receivers (North)
     recpy=trace.east; % Y coordinate of receivers (East)
     recpz=trace.depth; % Z coordinate of receivers (Down, Depth). Negative value means above the sea leval.
+else
+    recpx=[];
+    recpy=[];
+    recpz=[];
 end
 
 % X-Y profile

@@ -1,6 +1,9 @@
 function seismic=read_seish5(fname)
 % This function is used to read seismic data of h5 format.
-% The length of seismic data of different stations should be the same.
+%
+% The seismic data of different traces should have the same length, the
+% same sampling rate and also start at the same time.
+%
 % At the present, it is only valid for reading one component dataset.
 % The H5 data should be oganized as follows:
 % /NETWORK_NAME (contains different stations)
@@ -15,10 +18,12 @@ function seismic=read_seish5(fname)
 % seismic: structure, contains seismic data and metadata of each station;
 % seismic.network: string, the name of the network;
 % seismic.component: character, the name of the data component (usually N, E or Z);
-% seismic.name: cell array, contains the name of each station;
+% seismic.name: cell array, 1*ns, contains the name of each station;
 % seismic.fe: scaler, the sampling frequency of the data;
-% seismic.t0: datetime, the origin time of the seismic data;
+% seismic.t0: matlab datetime, the origin time of the seismic data;
 % seismic.data: 2D array, ns*nt, contains seismic data.
+
+fname=char(fname);
 
 info=h5info(fname); % obtain the metadata information
 
