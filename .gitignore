@@ -3,3 +3,5 @@
 downloads/
 # ignore files in the colormaps folder
 colormaps/
+
+.directory
