@@ -105,21 +105,36 @@ else
 end
 
 if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
-    % use pre-calculated traveltime tables
+    % use pre-calculated traveltime tables and source imaging points
     load(mcm.prefile,'stations','search'); % load in the 'stations' and the 'search' parameter
     
     % obtain MCM required input files
     % generate binary file of source imaging positions
-    [search.soup,search.snr,search.ser,search.sdr,search.nsnr,search.nser,search.nsdr]=gene_soup(search.north,search.east,search.depth,search.dn,search.de,search.dd,precision);
+    fid=fopen([folder '/soupos.dat'],'w');
+    fwrite(fid,search.soup,precision);
+    fclose(fid);
     
+    % generate binary file of traveltime tables
+    if isfield(stations,'travelp') && ~isempty(stations.travelp)
+        % for P-wave traveltimes
+        fid=fopen([folder '/travelp.dat'],'w');
+        fwrite(fid,stations.travelp,precision);
+        fclose(fid);
+    end
+    if isfield(stations,'travels') && ~isempty(stations.travels)
+        % for S-wave traveltimes
+        fid=fopen([folder '/travels.dat'],'w');
+        fwrite(fid,stations.travels,precision);
+        fclose(fid);
+    end
 else
     % need to calculate traveltime tables
     % read in station information
     stations=read_stations(file_stations); % read in station information in IRIS text format
-        
+    
     % read in velocity infomation
     model=read_velocity(file_velocity); % read in velocity model, now only accept homogeneous and layered model
-        
+    
     % obtain MCM required input files
     % generate binary file of source imaging positions
     [search.soup,search.snr,search.ser,search.sdr,search.nsnr,search.nser,search.nsdr]=gene_soup(search.north,search.east,search.depth,search.dn,search.de,search.dd,precision);
