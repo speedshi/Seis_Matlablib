@@ -10,6 +10,7 @@ function migv=runmcm_matlab_test(trace,mcm,search,test)
 % trace.travels: S-wave traveltime table, 2D array, nsr*nre;
 % trace.recp: assambled station positions, 2D array, n_sta*3, N-E-D in meters;
 % mcm: matlab structure, contains MCM parameters;
+% mcm.phasetp: specify seismic phase used for migration, scalar;
 % mcm.tpwind: P-phase time window length in second, scalar;
 % mcm.tswind: S-phase time window length in second, scalar;
 % mcm.st0: searched origin times of MCM, in second (relative to start time
@@ -46,7 +47,25 @@ stime=seconds(catalog.time(test.cataid)-test.t0);
 mcm.st0=(stime-test.twind):mcm.dt0:(stime+test.twind);
 
 % run the MCM test
-migv=wave_migration_kernel(trace,mcm,search);
+if mcm.phasetp==2
+    % use both P and S phase
+    fprintf('Use P-phase of %f s window and S-phase of %f s window for MCM.\n',mcm.tpwind,mcm.tswind);
+    migv=wave_migration_kernel(trace,mcm,search);
+elseif mcm.phasetp==0
+    % use only P-phase
+    fprintf('Use P-phase of %f s window for MCM.\n',mcm.tpwind);
+    mcm.txwind=mcm.tpwind;
+    trace.travelx=trace.travelp;
+    migv=wave_migration_kernel_x(trace,mcm,search);
+elseif mcm.phasetp==1
+    % use only S-phase
+    fprintf('Use S-phase of %f s window for MCM.\n',mcm.tswind);
+    mcm.txwind=mcm.tswind;
+    trace.travelx=trace.travels;
+    migv=wave_migration_kernel_x(trace,mcm,search);
+else
+    error('Incorrect input for mcm.phasetp, only accept: 0, 1, 2.');
+end
 
 
 % show and compare results
@@ -90,7 +109,7 @@ title('Record section (MCM)');
 [~,idseca]=min(sum((search.soup-[catalog.north(test.cataid) catalog.east(test.cataid) catalog.depth(test.cataid)]).^2,2));
 
 % display the arrival times of seismic event on the recorded seismic data
-et0ca=stime; 
+et0ca=stime;
 net0r=round((et0ca-lwin)/trace.dt+1):round((et0ca+rwin)/trace.dt+1); % origin time for the catalogue
 exwfmca=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
