@@ -82,13 +82,16 @@ fprintf('Maximum coherence value: %f.\n',max(wfmstk_c(:))); % maximum coherency 
 fprintf('Origin time: %f s.\n',mcm.st0(tn)); % located event origin time
 fprintf('Event location: %f, %f, %f m.\n',search.soup(idse,:)); % located event locations
 
+
 lwin=30; % left window length for showing seismic data, in second
 rwin=60; % right window length for showing seismic data, in second
 
 nre=size(trace.data,1); % number of stations used in MCM
 
+
+
+% Display results, for MCM without origin tima calibration
 % display the arrival times of seismic event on the recorded seismic data
-%et0=mcm.st0(tn)+mcm.tpwind-0.3; % the calibrated origin time
 et0=mcm.st0(tn); % the located origin time
 net0r=round((et0-lwin)/trace.dt+1):round((et0+rwin)/trace.dt+1); % origin time for the MCM
 exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
@@ -100,11 +103,34 @@ for ire=1:nre
 end
 seisrsdisp(exwfm,trace.dt); % display the waveforms of different stations all together
 
-% record section for MCM
+% record section for MCM, without origin time calibration
 soup_mcm=search.soup(idse,:)/1000;
 dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer
 title('Record section (MCM)');
 
+
+
+% Display results, for MCM with origin tima calibration
+tphase=0.45; % period of the seismic phase, in second
+et0=mcm.st0(tn)+mcm.tpwind-tphase; % the calibrated origin time
+net0r=round((et0-lwin)/trace.dt+1):round((et0+rwin)/trace.dt+1); % origin time for the MCM
+exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
+for ire=1:nre
+    figure; plot((net0r-1)*trace.dt,exwfm(:,ire),'k'); hold on;
+    plot([trace.travelp(idse,ire)+et0   trace.travelp(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'b','linewidth',1.2); hold on;
+    plot([trace.travels(idse,ire)+et0   trace.travels(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'r','linewidth',1.2); hold on;
+    xlabel('Time');ylabel('Amplitude');title('MCM');axis tight;
+end
+seisrsdisp(exwfm,trace.dt); % display the waveforms of different stations all together
+
+% record section for MCM, with origin time calibration
+soup_mcm=search.soup(idse,:)/1000;
+dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer
+title('Record section (MCM with t0 calibrated)');
+
+
+
+% Display results, for the catalog
 % determine catalog event index in the soup, by using minimal distance--approximate
 [~,idseca]=min(sum((search.soup-[catalog.north(test.cataid) catalog.east(test.cataid) catalog.depth(test.cataid)]).^2,2));
 
