@@ -31,11 +31,12 @@ function migv=runmcm_matlab_test(trace,mcm,search,test)
 % test.cataname: name of catalog file;
 % test.timerg: time range for loading catalog data;
 % test.t0: starting time of seismic data and reference time, matlab datetime;
-% test.wind: tested time window length around the selectedd event origin
+% test.cataid: specify which event in the catalog we want to test;
+% test.twind: tested time window length around the selectedd event origin
 % time, in second;
 %
 % OUTPUT-------------------------------------------------------------------
-%
+% migv: migration volume, 4D array, shape: nsnr*nser*nsdr*nst0.
 
 % read in catalog data
 catalog=read_catalog(test.cataname,test.timerg);
@@ -148,6 +149,6 @@ seisrsdisp(exwfmca,trace.dt); % display the waveforms of different stations all 
 
 % record section of catalogue
 dispwfscn(trace.data',trace.recp/1000,soup_cata,trace.dt,et0ca,trace.travelp(idseca,:),trace.travels(idseca,:)); % note unit transfer
-title('Record section (Catalogue)');
+title('Record section (Catalog)');
 
 end

@@ -1,4 +1,4 @@
-function [trace,search,mcm]=mcm_genei(file_seismic,file_stations,file_velocity,search,mcm,precision)
+function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % This function is used to generate the required input files for MCM.
 % Unit: meter, m/s, degree.
 %
@@ -8,13 +8,14 @@ function [trace,search,mcm]=mcm_genei(file_seismic,file_stations,file_velocity,s
 % The seismic data of different traces should have the same length, the
 % same sampling rate and also start at the same time.
 %
-% The parameter 'file_seismic' can be a string or cell array which contains
+% The parameter 'file.seismic' can be a string or cell array which contains
 % the file name of the input seismic data.
 %
 % INPUT--------------------------------------------------------------------
-% file_seismic: file name (including path) of the seismic data, a string or cell array;
-% file_stations: file name (including path) of the stations, a string;
-% file_velocity: file name (including path) of the velocity model, a string;
+% file: matlab structure, contains the file names of the input data;
+% file.seismic: file name (including path) of the seismic data, a string or cell array;
+% file.stations: file name (including path) of the stations, a string;
+% file.velocity: file name (including path) of the velocity model, a string;
 % search: matlab structure, contains the imaging area information,
 % search.north: 1*2, imaging area in the north direction, in meter,
 % search.east: 1*2, imaging area in the east direction, in meter,
@@ -57,10 +58,10 @@ function [trace,search,mcm]=mcm_genei(file_seismic,file_stations,file_velocity,s
 % mcm: matlab structure, MCM parameters and configuration information.
 
 % set default value
-if nargin==4
+if nargin==2
     mcm=[];
     precision='double';
-elseif nargin==5
+elseif nargin==3
     precision='double';
 end
 
@@ -88,18 +89,18 @@ if ~exist(folder,'dir')
 end
 
 % process file names of seismic data
-if ~isa(file_seismic,'cell')
+if ~isa(file.seismic,'cell')
     % input is characters or string which is the name of a file
-    file_seismic=char(file_seismic); % transfer to character vectors
-    file_seismic={file_seismic}; % transfer to cell array
+    file.seismic=char(file.seismic); % transfer to character vectors
+    file.seismic={file.seismic}; % transfer to cell array
 end
 % read in seismic data
-if strcmp(file_seismic{1}(end-2:end),'.h5') || strcmp(file_seismic{1}(end-2:end),'.H5')
+if strcmp(file.seismic{1}(end-2:end),'.h5') || strcmp(file.seismic{1}(end-2:end),'.H5')
     % read in the H5 format data
-    seismic=read_seish5(file_seismic);
-elseif strcmp(file_seismic{1}(end-3:end),'.sac') || strcmp(file_seismic{1}(end-3:end),'.SAC')
+    seismic=read_seish5(file.seismic);
+elseif strcmp(file.seismic{1}(end-3:end),'.sac') || strcmp(file.seismic{1}(end-3:end),'.SAC')
     % read in the SAC format data
-    seismic=read_seissac(file_seismic);
+    seismic=read_seissac(file.seismic);
 else
     error('Unrecognised format of seismic data.');
 end
@@ -130,10 +131,10 @@ if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
 else
     % need to calculate traveltime tables
     % read in station information
-    stations=read_stations(file_stations); % read in station information in IRIS text format
+    stations=read_stations(file.stations); % read in station information in IRIS text format
     
     % read in velocity infomation
-    model=read_velocity(file_velocity); % read in velocity model, now only accept homogeneous and layered model
+    model=read_velocity(file.velocity); % read in velocity model, now only accept homogeneous and layered model
     
     % obtain MCM required input files
     % generate binary file of source imaging positions
@@ -179,6 +180,10 @@ end
 
 % check if need to run the MCM program
 switch mcm.run
+    case 0
+        fprintf('Run MCM parameter test program.\n');
+        mcm_test_para(trace,mcm,search);
+        
     case 1
         fprintf('Run MCM Fortran-OpenMP program.\n');
         
@@ -194,8 +199,9 @@ switch mcm.run
         end
         
         migv=runmcm_matlab_test(trace,mcm,search,mcm.test);
+        
     otherwise
-        fprintf('No MCM program is running.\n');
+        fprintf('No MCM program is running. Just generate the input files for MCM.\n');
 end
 
 cd('..');
