@@ -1,4 +1,4 @@
-function mcm_test_para(trace,mcm,search)
+function mcm_test_para(trace,mcm,search,earthquake)
 % This function is used to perform tests and decide MCM parameters.
 %
 % INPUT--------------------------------------------------------------------
@@ -17,18 +17,24 @@ function mcm_test_para(trace,mcm,search)
 % mcm.test.cataid: specify which event in the catalog we want to test;
 % search: matlab structure, describe the imaging area,
 % search.soup: source imaging positions, 2D array, ns*3, in meter;
+% earthquake: matlab structure, contains the location and origin time of the earthquake;
+% earthquake.north: scalar, earthquake location in north direction, in meter;
+% earthquake.east: scalar, earthquake location in east direction, in meter;
+% earthquake.depth: scalar, earthquake location in depth direction, in meter;
+% earthquake.t0: scalar, relative earthquake origin time, in second,
+% relative to the origin time of the seismic data;
 %
 % OUTPUT-------------------------------------------------------------------
 %
 
-% read in catalog data, obtain the catalog information
-catalog=read_catalog(mcm.test.cataname,mcm.test.timerg);
+% the location of the earthquake, in meter
+soup_cata=[earthquake.north earthquake.east earthquake.depth];
 
 % obtain the origin time of the tested event relative to the starting time of traces (t0), in second
-stime=seconds(catalog.time(mcm.test.cataid)-mcm.test.t0);
+stime=earthquake.t0;
 
 % determine catalog event index in the soup, by using minimal distance--approximate
-[~,idseca]=min(sum((search.soup-[catalog.north(mcm.test.cataid) catalog.east(mcm.test.cataid) catalog.depth(mcm.test.cataid)]).^2,2));
+[~,idseca]=min(sum((search.soup-soup_cata).^2,2));
 
 switch mcm.phasetp
     case 0

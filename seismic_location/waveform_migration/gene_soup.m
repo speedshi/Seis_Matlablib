@@ -25,7 +25,7 @@ function [soup,snr,ser,sdr,nsnr,nser,nsdr]=gene_soup(north_r,east_r,depth_r,dn,d
 % nsdr: number of imaging points in the depth direction, scalar;
 % fname: binary source position file.
 
-folder='data'; % name of the folder where output data are stored
+folder='./data'; % name of the folder where output data are stored
 
 % check if the output folder exists, if not, then create it
 if ~exist(folder,'dir')
@@ -44,7 +44,7 @@ if isempty(precision)
 end
 
 if ~isempty(fname)
-    fname=['./' folder '/' fname]; % including the folder
+    fname=[folder '/' fname]; % including the folder
 end
 
 % generate source position matrix

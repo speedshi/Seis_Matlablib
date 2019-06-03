@@ -35,7 +35,7 @@ function stations=gene_traveltime(model,stations,search,precision,fname_p,fname_
 % fname_p: binary file of P-wave traveltimes for MCM input;
 % fname_s: binary file of S-wave traveltimes for MCM input.
 
-folder='data'; % name of the folder where output data are stored
+folder='./data'; % name of the folder where output data are stored
 
 % check if the output folder exists, if not, then create it
 if ~exist(folder,'dir')
@@ -57,11 +57,11 @@ if isempty(precision)
 end
 
 if ~isempty(fname_p)
-    fname_p=['./' folder '/' fname_p]; % including the folder
+    fname_p=[folder '/' fname_p]; % including the folder
 end
 
 if ~isempty(fname_s)
-    fname_s=['./' folder '/' fname_s]; % including the folder
+    fname_s=[folder '/' fname_s]; % including the folder
 end
 
 stations.travelp=[];

@@ -46,7 +46,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 
 
 
-folder='data'; % name of the folder where output data are stored
+folder='./data'; % name of the folder where output data are stored
 
 % check if the output folder exists, if not, then create it
 if ~exist(folder,'dir')
@@ -76,15 +76,15 @@ if isempty(precision)
 end
 
 if ~isempty(fname_d)
-    fname_d=['./' folder '/' fname_d];
+    fname_d=[folder '/' fname_d];
 end
 
 if ~isempty(fname_p)
-    fname_p=['./' folder '/' fname_p];
+    fname_p=[folder '/' fname_p];
 end
 
 if ~isempty(fname_s)
-    fname_s=['./' folder '/' fname_s];
+    fname_s=[folder '/' fname_s];
 end
 
 

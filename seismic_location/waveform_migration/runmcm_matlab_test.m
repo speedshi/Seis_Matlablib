@@ -1,4 +1,4 @@
-function migv=runmcm_matlab_test(trace,mcm,search,test)
+function migv=runmcm_matlab_test(trace,mcm,search,earthquake)
 % This function is used to set up and run MCM Matlab test version.
 % X-North  Y-East  Z-Depth(Vertical down)
 %
@@ -27,25 +27,17 @@ function migv=runmcm_matlab_test(trace,mcm,search,test)
 % search.nsnr: number of imaging points in the north direction, scalar;
 % search.nser: number of imaging points in the east direction, scalar;
 % search.nsdr: number of imaging points in the depth direction, scalar;
-% test: matlab structure, contains catalog information used for testing;
-% test.cataname: name of catalog file;
-% test.timerg: time range for loading catalog data;
-% test.t0: starting time of seismic data and reference time, matlab datetime;
-% test.cataid: specify which event in the catalog we want to test;
-% test.twind: tested time window length around the selectedd event origin
-% time, in second;
+% earthquake: matlab structure, contains the location and origin time of the earthquake;
+% earthquake.north: scalar, earthquake location in north direction, in meter;
+% earthquake.east: scalar, earthquake location in east direction, in meter;
+% earthquake.depth: scalar, earthquake location in depth direction, in meter;
+% earthquake.t0: scalar, relative earthquake origin time, in second,
+% relative to the origin time of the seismic data;
 %
 % OUTPUT-------------------------------------------------------------------
 % migv: migration volume, 4D array, shape: nsnr*nser*nsdr*nst0.
 
-% read in catalog data
-catalog=read_catalog(test.cataname,test.timerg);
 
-% obtain the relative tested origin time (relative to t0), in second
-stime=seconds(catalog.time(test.cataid)-test.t0);
-
-% obtain the searching origin time serials
-mcm.st0=(stime-test.twind):mcm.dt0:(stime+test.twind);
 
 % run the MCM test
 if mcm.phasetp==2
@@ -73,9 +65,9 @@ end
 
 wfmstk_c=permute(migv,[4 1 2 3]); % note here exchange dimensions
 
-soup_cata=[catalog.north(test.cataid) catalog.east(test.cataid) catalog.depth(test.cataid)]/1000; % note the unit transfer, m->km
+soup_cata=[earthquake.north earthquake.east earthquake.depth]; % location of the earthquake, in meter
 
-[tn,xn,yn,zn]=migmaxplt(wfmstk_c,soup_cata,search.north/1000,search.east/1000,search.depth/1000); % note the unit transfer, m->km
+[tn,xn,yn,zn]=migmaxplt(wfmstk_c,soup_cata/1000,search.north/1000,search.east/1000,search.depth/1000); % note the unit transfer, m->km
 
 idse=sub2ind([search.nsnr search.nser search.nsdr],xn,yn,zn); % location index for the MCM
 
@@ -126,17 +118,17 @@ seisrsdisp(exwfm,trace.dt); % display the waveforms of different stations all to
 
 % record section for MCM, with origin time calibration
 soup_mcm=search.soup(idse,:)/1000;
-dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer
+dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer, m->km
 title('Record section (MCM with t0 calibrated)');
 
 
 
 % Display results, for the catalog
 % determine catalog event index in the soup, by using minimal distance--approximate
-[~,idseca]=min(sum((search.soup-[catalog.north(test.cataid) catalog.east(test.cataid) catalog.depth(test.cataid)]).^2,2));
+[~,idseca]=min(sum((search.soup-soup_cata).^2,2));
 
 % display the arrival times of seismic event on the recorded seismic data
-et0ca=stime;
+et0ca=earthquake.t0;
 net0r=round((et0ca-lwin)/trace.dt+1):round((et0ca+rwin)/trace.dt+1); % origin time for the catalogue
 exwfmca=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
@@ -148,7 +140,7 @@ end
 seisrsdisp(exwfmca,trace.dt); % display the waveforms of different stations all together
 
 % record section of catalogue
-dispwfscn(trace.data',trace.recp/1000,soup_cata,trace.dt,et0ca,trace.travelp(idseca,:),trace.travels(idseca,:)); % note unit transfer
+dispwfscn(trace.data',trace.recp/1000,soup_cata/1000,trace.dt,et0ca,trace.travelp(idseca,:),trace.travels(idseca,:)); % note unit transfer, m->km
 title('Record section (Catalog)');
 
 end

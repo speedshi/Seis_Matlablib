@@ -75,6 +75,7 @@ if ~isfield(mcm,'workfolder')
 end
 
 % check if the working directory exists, if not, then create it
+mcm.workfolder=['./' mcm.workfolder];
 if ~exist(mcm.workfolder,'dir')
     mkdir(mcm.workfolder);
 end
@@ -88,21 +89,12 @@ if ~exist(folder,'dir')
     mkdir(folder);
 end
 
-% process file names of seismic data
-if ~isa(file.seismic,'cell')
-    % input is characters or string which is the name of a file
-    file.seismic=char(file.seismic); % transfer to character vectors
-    file.seismic={file.seismic}; % transfer to cell array
-end
-% read in seismic data
-if strcmp(file.seismic{1}(end-2:end),'.h5') || strcmp(file.seismic{1}(end-2:end),'.H5')
-    % read in the H5 format data
-    seismic=read_seish5(file.seismic);
-elseif strcmp(file.seismic{1}(end-3:end),'.sac') || strcmp(file.seismic{1}(end-3:end),'.SAC')
-    % read in the SAC format data
-    seismic=read_seissac(file.seismic);
-else
-    error('Unrecognised format of seismic data.');
+% read the seismic data
+seismic=read_seis(file.seismic);
+
+% check if need to reset the t0 of the seismic data
+if isfield(mcm,'datat0')
+    seismic.t0=mcm.datat0;
 end
 
 if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
@@ -178,11 +170,31 @@ if ~isfield(mcm,'run')
     mcm.run=0;
 end
 
+
+% obtain parameters for testing
+if mcm.run==0 || mcm.run==3
+    
+    % mcm.test.timerg: time range for loading catalog data
+    mcm.test.timerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
+    
+    % read in catalog data
+    catalog=read_catalog(mcm.test.cataname,mcm.test.timerg);
+    
+    % obtain the relative tested origin time (relative to data t0), in second
+    earthquake.t0=seconds(catalog.time(mcm.test.cataid)-mcm.datat0);
+    
+    % obtain the location of the tested earthquake, in meter
+    earthquake.north=catalog.north(mcm.test.cataid); % north component
+    earthquake.east=catalog.east(mcm.test.cataid); % east component
+    earthquake.depth=catalog.depth(mcm.test.cataid); % depth component
+end
+
+
 % check if need to run the MCM program
 switch mcm.run
     case 0
         fprintf('Run MCM parameter test program.\n');
-        mcm_test_para(trace,mcm,search);
+        mcm_test_para(trace,mcm,search,earthquake);
         
     case 1
         fprintf('Run MCM Fortran-OpenMP program.\n');
@@ -193,12 +205,10 @@ switch mcm.run
     case 3
         fprintf('Run MCM Matlab test version program.\n');
         
-        if ~isfield(mcm.test,'timerg') || isempty(mcm.test.timerg)
-            % set default time range
-            mcm.test.timerg=[mcm.test.t0; mcm.test.t0+seconds((size(trace.data,2)-1)*trace.dt)];
-        end
+        % obtain the searching origin time serials
+        mcm.st0=(earthquake.t0-mcm.test.twind):mcm.dt0:(earthquake.t0+mcm.test.twind);
         
-        migv=runmcm_matlab_test(trace,mcm,search,mcm.test);
+        migv=runmcm_matlab_test(trace,mcm,search,earthquake);
         
     otherwise
         fprintf('No MCM program is running. Just generate the input files for MCM.\n');
