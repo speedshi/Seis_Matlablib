@@ -1,4 +1,4 @@
-function mcm_test_para(trace,mcm,search,earthquake)
+function [s_pro,n_var]=mcm_test_para(trace,mcm,search,earthquake,fshow)
 % This function is used to perform tests and decide MCM parameters.
 %
 % INPUT--------------------------------------------------------------------
@@ -11,10 +11,6 @@ function mcm_test_para(trace,mcm,search,earthquake)
 % mcm.phasetp: specify seismic phase used for migration, scalar;
 % mcm.tpwind: P-phase time window length in second, scalar;
 % mcm.tswind: S-phase time window length in second, scalar;
-% mcm.test.cataname: name of catalog file;
-% mcm.test.timerg: time range for loading catalog data;
-% mcm.test.t0: starting time of seismic data and reference time, matlab datetime;
-% mcm.test.cataid: specify which event in the catalog we want to test;
 % search: matlab structure, describe the imaging area,
 % search.soup: source imaging positions, 2D array, ns*3, in meter;
 % earthquake: matlab structure, contains the location and origin time of the earthquake;
@@ -23,9 +19,16 @@ function mcm_test_para(trace,mcm,search,earthquake)
 % earthquake.depth: scalar, earthquake location in depth direction, in meter;
 % earthquake.t0: scalar, relative earthquake origin time, in second,
 % relative to the origin time of the seismic data;
+% fshow: logical, whether to plot the figures, default is to plot;
 %
 % OUTPUT-------------------------------------------------------------------
-%
+% s_pro: source prominence;
+% n_var: noise variance;
+
+% set default value
+if nargin<5
+    fshow=true;
+end
 
 % the location of the earthquake, in meter
 soup_cata=[earthquake.north earthquake.east earthquake.depth];
@@ -49,10 +52,12 @@ switch mcm.phasetp
         % extrace the data
         edata=wave_extract(trace.data',trace.dt,atimes,twinl,twinr);
         
-        % display the extracted data, note 'edata' has the shape of 'nt*nre'
-        seisrsdisp(edata,trace.dt);
-        hold on; ax1=gca; ylim1=ax1.YLim;
-        plot([twinl,twinl],ylim1,'r'); hold on;
+        if fshow
+            % display the extracted data, note 'edata' has the shape of 'nt*nre'
+            seisrsdisp(edata,trace.dt);
+            hold on; ax1=gca; ylim1=ax1.YLim;
+            plot([twinl,twinl],ylim1,'r'); hold on;
+        end
         
     case 1
         % only for S-waves
@@ -66,10 +71,12 @@ switch mcm.phasetp
         % extrace the data
         edata=wave_extract(trace.data',trace.dt,atimes,twinl,twinr);
         
-        % display the extracted data, note 'edata' has the shape of 'nt*nre'
-        seisrsdisp(edata,trace.dt);
-        hold on; ax1=gca; ylim1=ax1.YLim;
-        plot([twinl,twinl],ylim1,'r'); hold on;
+        if fshow
+            % display the extracted data, note 'edata' has the shape of 'nt*nre'
+            seisrsdisp(edata,trace.dt);
+            hold on; ax1=gca; ylim1=ax1.YLim;
+            plot([twinl,twinl],ylim1,'r'); hold on;
+        end
         
     case 2
         % for both P- and S-waves
@@ -101,12 +108,14 @@ switch mcm.phasetp
         % combine P and S segments together
         edata=[edata1; edata2];
         
-        % display the extracted data, note 'edata' has the shape of 'nt*nre'
-        seisrsdisp(edata,trace.dt);
-        hold on; ax1=gca; ylim1=ax1.YLim;
-        plot([twinl1,twinl1],ylim1,'r'); hold on;
-        stpt=twinl1+twinr1+twinl2;
-        plot([stpt,stpt],ylim1,'r'); hold on;
+        if fshow
+            % display the extracted data, note 'edata' has the shape of 'nt*nre'
+            seisrsdisp(edata,trace.dt);
+            hold on; ax1=gca; ylim1=ax1.YLim;
+            plot([twinl1,twinl1],ylim1,'r'); hold on;
+            stpt=twinl1+twinr1+twinl2;
+            plot([stpt,stpt],ylim1,'r'); hold on;
+        end
         
 end
 
@@ -128,15 +137,17 @@ switch mcm.phasetp
             migv(it)=sum(abs(ccm(:)))/ncoe; % migration value
         end
         
-        % show the migration values
-        figure;
-        plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
-        ax=gca; ylim=ax.YLim;
-        plot([twinl twinl],ylim,'r'); hold on;% origin time (arrival time of P)
-        t_cor=twinl-twind+0.5; % calibrate according to time window length and period
-        plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time (arrival time of P)
-        xlabel('Time (s)'); ylabel('Coherency');
-        title('Only P-phase'); axis tight;
+        if fshow
+            % show the migration values
+            figure;
+            plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
+            ax=gca; ylim=ax.YLim;
+            plot([twinl twinl],ylim,'r'); hold on;% origin time (arrival time of P)
+            t_cor=twinl-twind+0.5; % calibrate according to time window length and period
+            plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time (arrival time of P)
+            xlabel('Time (s)'); ylabel('Coherency');
+            title('Migration trace using P-phase'); axis tight;
+        end
         
     case 1
         % for S-phase
@@ -151,15 +162,17 @@ switch mcm.phasetp
             migv(it)=sum(abs(ccm(:)))/ncoe; % migration value
         end
         
-        % show the migration values
-        figure;
-        plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
-        ax=gca; ylim=ax.YLim;
-        plot([twinl twinl],ylim,'r'); hold on;% origin time (arrival time of S)
-        t_cor=twinl-twind+0.5; % calibrate according to time window length and period
-        plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time (arrival time of S)
-        xlabel('Time (s)'); ylabel('Coherency');
-        title('Only S-phase'); axis tight;
+        if fshow
+            % show the migration values
+            figure;
+            plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
+            ax=gca; ylim=ax.YLim;
+            plot([twinl twinl],ylim,'r'); hold on;% origin time (arrival time of S)
+            t_cor=twinl-twind+0.5; % calibrate according to time window length and period
+            plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time (arrival time of S)
+            xlabel('Time (s)'); ylabel('Coherency');
+            title('Migration trace using S-phase'); axis tight;
+        end
         
     case 2
         % for P- and S-phase
@@ -180,36 +193,51 @@ switch mcm.phasetp
             migv(it)=(0.5*sum(abs(ccm_p(:)))+0.5*sum(abs(ccm_s(:))))/ncoe; % migration value
         end
         
-        % show the migration values
-        figure;
-        plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
-        ax=gca; ylim=ax.YLim;
-        plot([twinl1 twinl1],ylim,'r'); hold on;% origin time (also P arrival time)
-        t_cor=twinl1-0.5*(mcm.tpwind+mcm.tswind)+0.5; % calibrate according to time window length and period
-        plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time
-        plot([twinl1+twinr1+twinl2 twinl1+twinr1+twinl2],ylim,'b'); hold on;% S arrival time
-        xlabel('Time (s)'); ylabel('Coherency');
-        title('P- and S-phase'); axis tight;
- 
+        if fshow
+            % show the migration values
+            figure;
+            plot((0:nn-1)*trace.dt,migv,'k','linewidth',1.5); hold on;
+            ax=gca; ylim=ax.YLim;
+            plot([twinl1 twinl1],ylim,'r'); hold on;% origin time (also P arrival time)
+            t_cor=twinl1-0.5*(mcm.tpwind+mcm.tswind)+0.5; % calibrate according to time window length and period
+            plot([t_cor t_cor],ylim,'r--'); hold on;% calibrated origin time
+            plot([twinl1+twinr1+twinl2 twinl1+twinr1+twinl2],ylim,'b'); hold on;% S arrival time
+            xlabel('Time (s)'); ylabel('Coherency');
+            title('Migration trace using P- and S-phases'); axis tight;
+        end
+        
 end
 
 [mm,mm_id]=max(migv); % obtain the maximum migration value and time
 
-% show maximum coherent time on sections
-wst=(mm_id-1)*trace.dt;
-xx=[wst wst+twind wst+twind wst];
-yy=[ylim1(1) ylim1(1) ylim1(2) ylim1(2)];
-fill(ax1,xx,yy,'y','linestyle','none','FaceAlpha',0.35); hold on;
-
-if mcm.phasetp==2
-    wst=(mm_id-1)*trace.dt+twinr1+twinl2;
-    xx=[wst wst+twind2 wst+twind2 wst];
-    fill(ax1,xx,yy,'g','linestyle','none','FaceAlpha',0.35); hold on;
+if fshow
+    % show maximum coherent time window on record sections
+    wst=(mm_id-1)*trace.dt;
+    xx=[wst wst+twind wst+twind wst];
+    yy=[ylim1(1) ylim1(1) ylim1(2) ylim1(2)];
+    fill(ax1,xx,yy,'y','linestyle','none','FaceAlpha',0.35); hold on;
+    
+    if mcm.phasetp==2
+        wst=(mm_id-1)*trace.dt+twinr1+twinl2;
+        xx=[wst wst+twind2 wst+twind2 wst];
+        fill(ax1,xx,yy,'g','linestyle','none','FaceAlpha',0.35); hold on;
+    end
 end
 
+% calculate source prominence
+s_pro=mm/median(migv);
 
+% calculate noise variance
+if mcm.phasetp==2
+    sdd=round((twinl1+20)/trace.dt);
+else
+    sdd=round((twinl+20)/trace.dt);
+end
+n_var=var(migv(sdd:end));
 
-fprintf('Source prominence: %f.\n',mm/median(migv));
-
+if fshow
+    fprintf('Source prominence: %f.\n',s_pro);
+    fprintf('Noise variance: %f.\n',n_var);
+end
 
 end

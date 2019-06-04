@@ -171,47 +171,52 @@ if ~isfield(mcm,'run')
 end
 
 
-% obtain parameters for testing
-if mcm.run==0 || mcm.run==3
-    
-    % mcm.test.timerg: time range for loading catalog data
-    mcm.test.timerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
-    
-    % read in catalog data
-    catalog=read_catalog(mcm.test.cataname,mcm.test.timerg);
-    
-    % obtain the relative tested origin time (relative to data t0), in second
-    earthquake.t0=seconds(catalog.time(mcm.test.cataid)-mcm.datat0);
-    
-    % obtain the location of the tested earthquake, in meter
-    earthquake.north=catalog.north(mcm.test.cataid); % north component
-    earthquake.east=catalog.east(mcm.test.cataid); % east component
-    earthquake.depth=catalog.depth(mcm.test.cataid); % depth component
-end
+mcm.datat0=seismic.t0; % the starting time (t0) of seismic data, datetime
+
+% mcm.test.timerg: time range for loading the catalog data
+mcm.test.timerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
 
 
 % check if need to run the MCM program
 switch mcm.run
     case 0
-        fprintf('Run MCM parameter test program.\n');
-        mcm_test_para(trace,mcm,search,earthquake);
+        fprintf('Run MCM parameter testing program at the source location.\n');
+        
+        % obtain the information of the specified earthquake
+        earthquake=get_earthquake(mcm,search);
+        
+        % obtain the migration trace at the input earthquake location
+        [s_pro,n_var]=mcm_test_para(trace,mcm,search,earthquake);
         
     case 1
-        fprintf('Run MCM Fortran-OpenMP program.\n');
+        fprintf('Run MCM frequency band testing.\n');
+        
+        % obtain the information of the specified earthquake
+        earthquake=get_earthquake(mcm,search);
+        
+        % search and show results for different frequency band
+        mcm_test_freqband(file.seismic,stations,mcm,earthquake,search);
         
     case 2
-        fprintf('Run MCM Matlab program.\n');
+        fprintf('Run MCM testing program with the catalog input.\n');
         
-    case 3
-        fprintf('Run MCM Matlab test version program.\n');
+        % obtain the information of the specified earthquake
+        earthquake=get_earthquake(mcm,search);
         
         % obtain the searching origin time serials
         mcm.st0=(earthquake.t0-mcm.test.twind):mcm.dt0:(earthquake.t0+mcm.test.twind);
         
+        % run mcm around the time range of the input earthquake
         migv=runmcm_matlab_test(trace,mcm,search,earthquake);
         
+    case 3
+        fprintf('Run MCM Matlab program.\n');
+        
+    case 4
+        fprintf('Run MCM Fortran-OpenMP program.\n');
+        
     otherwise
-        fprintf('No MCM program is running. Just generate the input files for MCM.\n');
+        fprintf('No MCM program is running. Just generate the input files for MCM Fortraan program.\n');
 end
 
 cd('..');

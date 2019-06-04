@@ -1,4 +1,4 @@
-function catalog=read_catalog(file_cata,timerg)
+function catalog=read_catalog(file_cata,timerg,search)
 % This function is used to read in the catalog information. The catalog
 % file is in IRIS text format.
 %
@@ -8,7 +8,12 @@ function catalog=read_catalog(file_cata,timerg)
 %
 % INPUT--------------------------------------------------------------------
 % file_cata: catalog file name;
-% timerg: matlab datetime, vetor: 2*1, used to select events in the time range.
+% timerg: matlab datetime, vetor: 2*1, used to select events in the time
+% range;
+% search: structure, used to select events in the specific zone;
+% search.north: 1*2, imaging area in the north direction, in meter;
+% search.east: 1*2, imaging area in the east direction, in meter;
+% search.depth: 1*2, imaging area in the depth direction, in meter;
 %
 % OUTPUT-------------------------------------------------------------------
 % catalog: matlab structure which contains corresponding catalog infomation
@@ -22,8 +27,11 @@ function catalog=read_catalog(file_cata,timerg)
 % catalog.magnitude: magnitude of earthquakes;
 
 % set default parameters
-if nargin < 2
+if nargin == 1
     timerg=[];
+    search=[];
+elseif nargin == 2
+    search=[];
 end
 
 opts=detectImportOptions(file_cata);
@@ -47,6 +55,19 @@ catalog.time=datetime(catainfo.Time,'Inputformat','yyyy-MM-dd''T''HH:mm:ss.SSSSS
 % select events within correct time range
 if ~isempty(timerg)
     indx = catalog.time>=timerg(1) & catalog.time<=timerg(2);
+    catalog.time=catalog.time(indx);
+    catalog.latitude=catalog.latitude(indx);
+    catalog.longitude=catalog.longitude(indx);
+    catalog.elevation=catalog.elevation(indx);
+    catalog.north=catalog.north(indx);
+    catalog.east=catalog.east(indx);
+    catalog.depth=catalog.depth(indx);
+    catalog.magnitude=catalog.magnitude(indx);
+end
+
+% select events within specific zone
+if ~isempty(search)
+    indx = catalog.north>=search.north(1) & catalog.north<=search.north(2) & catalog.east>=search.east(1) & catalog.east<=search.east(2) & catalog.depth>=search.depth(1) & catalog.depth<=search.depth(2);
     catalog.time=catalog.time(indx);
     catalog.latitude=catalog.latitude(indx);
     catalog.longitude=catalog.longitude(indx);
