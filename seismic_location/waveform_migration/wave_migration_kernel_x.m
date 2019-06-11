@@ -37,8 +37,6 @@ nxwd=round(mcm.txwind/dt)+1; % time window in points for the seismic phase
 % calculate and set some parameters
 [nsr,nre]=size(trace.travelx); % obtain number of source imaging points and stations
 
-ncoe=nre*(nre-1)/2; % number of unique station pairs
-
 nst0=max(size(st0)); % number of searched origin time points
 
 migv=zeros(nsr,nst0); % initial migration volume
@@ -53,9 +51,7 @@ parfor it=1:nst0
             cova_x(:,ir)=data(tvxn(ir):(tvxn(ir)+nxwd-1),ir);
         end
         
-        xcc=triu(mycorrcoef(cova_x),1); % correlation coefficient matrix of the seismic phase
-        
-        migv(id,it)=sum(abs(xcc(:)))/(ncoe);
+        migv(id,it)=stkcorrcoef(cova_x); % stacked correlation coefficient of the seismic phase
         
     end
 end

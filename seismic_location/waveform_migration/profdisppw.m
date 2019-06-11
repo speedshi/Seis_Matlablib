@@ -29,7 +29,8 @@ figure;
 for ii=1:ne
     scatter(cata(eid(ii),3),cata(eid(ii),2),'filled','k'); hold on;
     text(cata(eid(ii),3),cata(eid(ii),2),sprintf('%d',eid(ii))); hold on;
-    scatter(migloc(eid(ii),3),migloc(eid(ii),2),36,migloc(eid(ii),5),'filled'); hold on; colorbar;
+    scatter(migloc(eid(ii),3),migloc(eid(ii),2),36,migloc(eid(ii),5),'filled'); hold on; 
+    colormap(jet);colorbar;
     text(migloc(eid(ii),3),migloc(eid(ii),2),sprintf('%d',eid(ii))); hold on;
 end
 axis equal; xlim(taryr); ylim(tarxr); box on;

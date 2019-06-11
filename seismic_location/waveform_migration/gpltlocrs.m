@@ -1,9 +1,10 @@
 function gpltlocrs(data,events,time,cs)
-% This function is used to plot the corresponding located events.
+% This function is used to plot the corresponding located events on the MCM
+% migration trace.
 % Used for evaluation of the location performance.
 % INPUT--------------------------------------------------
-% data: whole migration data,  nevt*5, Origin_time-X-Y-Z-Coherency;
-% events: the found real events, ne*5, Origin_time-X-Y-Z-Coherency;
+% data: the whole migration data,  nevt*5, Origin_time-X-Y-Z-Coherency;
+% events: the detected real events, ne*5, Origin_time-X-Y-Z-Coherency;
 % time: the time axis of the data, matlab datatime format;
 % cs: the color of the highlighted events.
 
@@ -14,7 +15,7 @@ elseif nargin==3
     cs='r';
 end
 
-ne=size(events,1); % number of real events
+ne=size(events,1); % number of detected events
 sid=zeros(ne,1); % events index
 
 for ii=1:ne
@@ -31,12 +32,11 @@ ssid=sid(~isnan(sid)); % remove the NAN values in the index
 if isempty(time)
     plot(data(:,1),data(:,5),'k'); hold on;
     plot(data(ssid,1),data(ssid,5),[cs 'o'],'markersize',3,'markerfacecolor',cs); hold on;
-    xlim([data(ssid(1),1) data(ssid(end),1)]); xlabel('Time'); ylabel('Coherency');
-    %set(gca,'xtick',[0 3600 7200 10800 14400],'xticklabel',{'06:00:00','07:00:00','08:00:00','09:00:00','10:00:00'});
+    xlabel('Time'); ylabel('Coherency');
 else
     plot(time,data(:,5),'k'); hold on;
     plot(time(ssid),data(ssid,5),[cs 'o'],'markersize',3,'markerfacecolor',cs); hold on;
-    xlim([time(ssid(1),1) time(ssid(end),1)]);xlabel('Time'); ylabel('Coherency');
+    xlabel('Time'); ylabel('Coherency');
 end
 
 

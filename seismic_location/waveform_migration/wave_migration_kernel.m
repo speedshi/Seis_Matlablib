@@ -39,8 +39,6 @@ nswd=round(mcm.tswind/dt)+1; % S-wave time window in points
 % calculate and set some parameters
 [nsr,nre]=size(trace.travelp); % obtain number of source imaging points and stations
 
-ncoe=nre*(nre-1)/2; % number of unique station pairs
-
 nst0=max(size(st0)); % number of searched origin time points
 
 migv=zeros(nsr,nst0); % initial migration volume
@@ -58,10 +56,9 @@ parfor it=1:nst0
             cova_s(:,ir)=data(tvsn(ir):(tvsn(ir)+nswd-1),ir);
         end
         
-        pcc=triu(mycorrcoef(cova_p),1); % correlation coefficient of P phase
-        scc=triu(mycorrcoef(cova_s),1); % correlation coefficient of S phase
-        
-        migv(id,it)=(0.5*sum(abs(pcc(:)))+0.5*sum(abs(scc(:))))/(ncoe);
+        pcc=stkcorrcoef(cova_p); % stacked correlation coefficient of P phase
+        scc=stkcorrcoef(cova_s); % stacked correlation coefficient of S phase
+        migv(id,it)=0.5*(pcc+scc); % the final migration value
         
     end
 end

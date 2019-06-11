@@ -1,7 +1,7 @@
 function [exdata,cxdata]=locreson(locres,dt0,ctime,rspac,thrsd)
 % This function is used to find events that last a certain period within
 % the pre-set distance. Note the unit of the input parameters should keep
-% consistent. Time in second (s), distance in km or m.
+% consistent. Time in second (s), distance in meter (m).
 % The input events need to be sorted according to their origin time (in
 % ascending order).
 % INPUT--------------------------------------------------

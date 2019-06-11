@@ -119,9 +119,7 @@ switch mcm.phasetp
         
 end
 
-[nt,nre]=size(edata); % obtain the number of time samples and stations
-
-ncoe=nre*(nre-1)/2; % number of unique station pairs
+[nt,~]=size(edata); % obtain the number of time samples and stations
 
 switch mcm.phasetp
     case 0
@@ -133,8 +131,7 @@ switch mcm.phasetp
         migv=zeros(nn,1); % initialize the migration value array
         
         for it=1:nn
-            ccm=triu(mycorrcoef(edata(it:it+n_win-1,:)),1); % correlation matrix
-            migv(it)=sum(abs(ccm(:)))/ncoe; % migration value
+            migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
         end
         
         if fshow
@@ -158,8 +155,7 @@ switch mcm.phasetp
         migv=zeros(nn,1); % initialize the migration value array
         
         for it=1:nn
-            ccm=triu(mycorrcoef(edata(it:it+n_win-1,:)),1); % correlation matrix
-            migv(it)=sum(abs(ccm(:)))/ncoe; % migration value
+            migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
         end
         
         if fshow
@@ -188,9 +184,9 @@ switch mcm.phasetp
         migv=zeros(nn,1); % initialize the migration value array
         
         for it=1:nn
-            ccm_p=triu(mycorrcoef(edata(it:it+n_winp-1,:)),1); % correlation matrix of P
-            ccm_s=triu(mycorrcoef(edata((it+n_intv+1):(it+n_intv+1+n_wins-1),:)),1); % correlation matrix of S
-            migv(it)=(0.5*sum(abs(ccm_p(:)))+0.5*sum(abs(ccm_s(:))))/ncoe; % migration value
+            cc_p=stkcorrcoef(edata(it:it+n_winp-1,:)); % stacked CC of P
+            cc_s=stkcorrcoef(edata((it+n_intv+1):(it+n_intv+1+n_wins-1),:)); % stacked CC of S
+            migv(it)=0.5*(cc_p+cc_s); % final migration value
         end
         
         if fshow

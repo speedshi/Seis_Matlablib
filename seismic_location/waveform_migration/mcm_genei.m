@@ -195,7 +195,7 @@ switch mcm.run
         earthquake=get_earthquake(mcm,search);
         
         % search and show results for different frequency band
-        mcm_test_freqband(file.seismic,stations,mcm,earthquake,search);
+        [s_pro,n_var]=mcm_test_freqband(file.seismic,stations,mcm,earthquake,search);
         
     case 2
         fprintf('Run MCM testing program with the catalog input.\n');
@@ -216,7 +216,7 @@ switch mcm.run
         fprintf('Run MCM Fortran-OpenMP program.\n');
         
     otherwise
-        fprintf('No MCM program is running. Just generate the input files for MCM Fortraan program.\n');
+        fprintf('No MCM program is running. Just generate the input files for MCM Fortran program.\n');
 end
 
 cd('..');

@@ -1,11 +1,19 @@
 function cdata=event_optm(migloc,timelim,spaclim,vthrd)
 % This function is used to optimise the input event location results.
 % Unit should keep consistent for the data in: 'cata' and parameters: 'timelim' and 'spaclim'.
+% Unit should use second and meter.
+%
 % Input:----------------------------------------------------
-% migloc: the original location results, nevt*5, Time-North-East-Depth-Coherency.
-% timelim: minimal time limit, indicates the close located seismic events must have a time interval larger than 'timelim'.
-% spaclim: minimal space limit, indicates the close located seismic events must have a space interval larger than 'spaclim'.
+% migloc: the original location results, shape: nevt*5, in Time-North-East-Depth-Coherency;
+%
+% timelim: in second, minimal time limit, indicates the close located
+% seismic events must have a time interval larger than 'timelim';
+%
+% spaclim: in meter, minimal space limit, indicates the close located
+% seismic events must have a space interval larger than 'spaclim';
+%
 % vthrd: only events with coherency value >= "vthrd" are choosed as seismic events.
+%
 % Output:--------------------------------------------------
 % cdata: event locations after optimization, neo*5, Time-North-East-Depth-Coherency.
 

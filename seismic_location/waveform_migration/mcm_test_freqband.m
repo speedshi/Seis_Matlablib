@@ -48,12 +48,14 @@ nf=length(fc); % number of frequency points
 s_pro=NaN(nf);
 n_var=NaN(nf);
 
+% set the filtering parameters
+ffilter.type='bandpass'; % filter type, can be 'low', 'bandpass', 'high', 'stop'
+ffilter.order=4; % order of Butterworth filter, for bandpass and bandstop designs are of order 2n
+
 for ifc1=1:nf-1
     for ifc2=ifc1+1:nf
-        % set the filtering parameters
-        ffilter.freq=[fc(ifc1) fc(ifc2)]; % filtering frequency band
-        ffilter.type='bandpass'; % filter type, can be 'low', 'bandpass', 'high', 'stop'
-        ffilter.order=4; % order of Butterworth filter, for bandpass and bandstop designs are of order 2n
+        % set filtering frequency band
+        ffilter.freq=[fc(ifc1) fc(ifc2)];
         
         trace=gene_wavetime(seismic,stations,ffilter,[],[],[],[]);
         
@@ -63,15 +65,17 @@ for ifc1=1:nf-1
 end
 
 figure;
-pcolor(fc,fc,s_pro);
+fig=imagesc(fc,fc,s_pro);
 colormap(jet);colorbar;
+set(fig,'AlphaData',~isnan(s_pro)); % set NAN to background color
 axis equal tight;
 xlabel('f1 (Hz)');ylabel('f2 (Hz)');
 title('Source prominence');
 
 figure;
-pcolor(fc,fc,n_var);
+fig=imagesc(fc,fc,n_var);
 colormap(flipud(jet));colorbar;
+set(fig,'AlphaData',~isnan(n_var)); % set NAN to background color
 axis equal tight;
 xlabel('f1 (Hz)');ylabel('f2 (Hz)');
 title('Noise variance');
