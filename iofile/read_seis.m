@@ -14,7 +14,8 @@ function seismic=read_seis(fname)
 % OUTPUT-------------------------------------------------------------------
 % seismic: structure, contains seismic data and metadata of each station;
 % seismic.name: cell array, 1*ns, contains the name of each station;
-% seismic.fe: scaler, the sampling frequency of the data;
+% seismic.fe: scaler, the sampling frequency of the data, in Hz;
+% seismic.dt: scaler, the time sample interval of the data, in second;
 % seismic.t0: matlab datetime, the origin time of the seismic data;
 % seismic.data: 2D array, ns*nt, contains seismic data;
 % seismic.network: string, the name of the network;

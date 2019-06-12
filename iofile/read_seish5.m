@@ -19,7 +19,8 @@ function seismic=read_seish5(fname)
 % seismic.network: string, the name of the network;
 % seismic.component: character, the name of the data component (usually N, E or Z);
 % seismic.name: cell array, 1*ns, contains the name of each station;
-% seismic.fe: scaler, the sampling frequency of the data;
+% seismic.fe: scaler, the sampling frequency of the data, in Hz;
+% seismic.dt: scaler, the time sample interval of the data, in second;
 % seismic.t0: matlab datetime, the origin time of the seismic data;
 % seismic.data: 2D array, ns*nt, contains seismic data.
 
@@ -35,6 +36,8 @@ seismic.component=info.Groups(1).Groups(1).Datasets.Name; % obtain the name of t
 
 seismic.fe=h5read(fname,[info.Groups(2).Name '/fe']); % obtain the sampling frequency of the data
 
+seismic.dt=1.0/seismic.fe; % obtain time sample interval of the data, in second
+
 t0_UNIX_timestamp=h5read(fname,[info.Groups(2).Name '/t0_UNIX_timestamp']); % obtain Unix epoch time
 
 seismic.t0=datetime(t0_UNIX_timestamp,'convertfrom','posixtime'); % convert to human readable date and time
@@ -46,12 +49,12 @@ nt=info.Groups(1).Groups(1).Datasets.Dataspace.Size; % obtain the number of time
 seismic.data=zeros(ns,nt); % initialize the output seismic data
 
 for ii=1:ns
-    seismic.sname{ii}=info.Groups(1).Groups(ii).Name(lnet+3:end); % obtain the name of stations
+    seismic.name{ii}=info.Groups(1).Groups(ii).Name(lnet+3:end); % obtain the name of stations
     
     % remove the void location name
-    name_temp=seismic.sname{ii};
+    name_temp=seismic.name{ii};
     if strcmp(name_temp(end-2:end),'.00')
-        seismic.sname{ii}=name_temp(1:end-3);
+        seismic.name{ii}=name_temp(1:end-3);
     end
     
     datasetname=['/' seismic.network '/' name_temp '/' seismic.component];

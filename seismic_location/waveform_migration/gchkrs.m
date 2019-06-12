@@ -1,6 +1,8 @@
 function gchkrs(event,trace,tvtsoup,travelp,travels,tcal,show_stk)
 % This function is used to display and check the record section for a
-% particular input event. The unit of origin time is second.
+% particular input event.
+%
+% Unit: The unit for origin time is second, for distance is meter.
 %
 % X-North, Y-East, Z-Vertical down
 %
@@ -39,8 +41,8 @@ idse=find(abs(tvtsoup(:,1)-event(2))<1e-6 & abs(tvtsoup(:,2)-event(3))<1e-6 & ab
 soup_mcm=event(2:4); % source position
 
 % record section without t0 calibration
-et0=event(1);
-dispwfscn(skfz,recp,soup_mcm,dt,et0,travelp(idse,:),travels(idse,:));
+et0=event(1); % origin time
+dispwfscn(skfz,recp/1000,soup_mcm/1000,dt,et0,travelp(idse,:),travels(idse,:)); % note unit transfer: m -> km
 title('Record section (without t0 calibration)');
 
 if show_stk
@@ -56,7 +58,7 @@ end
 
 % record section with t0 calibration
 et0=event(1)+tcal;
-dispwfscn(skfz,recp,soup_mcm,dt,et0,travelp(idse,:),travels(idse,:));
+dispwfscn(skfz,recp/1000,soup_mcm/1000,dt,et0,travelp(idse,:),travels(idse,:));
 title('Record section (with t0 calibration)');
 
 if show_stk

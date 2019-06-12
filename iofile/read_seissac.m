@@ -17,6 +17,7 @@ function seismic=read_seissac(file_seismic)
 % seismic.component: character, the name of the data component (usually N, E or Z);
 % seismic.name: cell array, 1*ns, contains the name of each station;
 % seismic.fe: scaler, the sampling frequency of the data, in Hz;
+% seismic.dt: scaler, the time sample interval of the data, in second;
 % seismic.t0: matlab datetime, the origin time of the seismic data;
 % seismic.data: 2D array, ns*nt, contains seismic data.
 
@@ -38,7 +39,8 @@ for ii=1:n_file
     seismic.name{ii}=header.KSTNM; % name of the station
     
     if ii==1
-       seismic.fe=1./header.DELTA; % sampling frequency in Hz (the reciprocal of sampling interval)
+       seismic.fe=1.0/header.DELTA; % sampling frequency in Hz (the reciprocal of sampling interval)
+       seismic.dt=header.DELTA; % time sample interval, in second
        seismic.t0=datetime(t0,'ConvertFrom','datenum'); % starting time of all the traces
     end
     

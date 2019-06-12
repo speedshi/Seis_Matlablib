@@ -119,6 +119,10 @@ switch mcm.phasetp
         
 end
 
+% show the seismogram and spectrogram
+i_station=1; % specify to show which station
+ispectrogram_1(edata(:,i_station),trace.dt,trace.name{i_station},2);
+
 [nt,~]=size(edata); % obtain the number of time samples and stations
 
 switch mcm.phasetp

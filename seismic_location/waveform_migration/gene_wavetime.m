@@ -13,7 +13,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % INPUT--------------------------------------------------------------------
 % seismic: matlab structure, contains waveform information;
 % seismic.data: nrec*nt, seismic data;
-% seismic.sname: cell array, 1*nrec, station names;
+% seismic.name: cell array, 1*nrec, station names;
 % seismic.fe: scaler, the sampling frequency of the data, in Hz;
 % seismic.t0: matlab datetime, the starting time of seismic data;
 % stations: matlab structure, contains station information;
@@ -35,6 +35,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % OUTPUT-------------------------------------------------------------------
 % trace: matlab structure, contain selected data information;
 % trace.data: seismic data, 2D array, n_sta*nt;
+% trace.fe: sampling frequency of seismic data, in Hz, scalar;
 % trace.dt: time sampling interval of seismic data, in second, scalar;
 % trace.name: name of selected stations, vector, 1*n_sta;
 % trace.north: north coordinates of selected stations, vector, 1*n_sta;
@@ -101,7 +102,7 @@ n_sta=0; % total number of effective stations
 
 for ir=1:nr
     
-    indx=strcmp(stations.name{ir},seismic.sname); % index of this station in the 'seismic' file
+    indx=strcmp(stations.name{ir},seismic.name); % index of this station in the 'seismic' file
     
     if sum(indx)==1
         % find seismic data for this station
@@ -164,6 +165,9 @@ if ~isempty(ffilter)
         trace.data(ir,:)=filter(bb,aa,trace.data(ir,:));
     end
 end
+
+% sampling frequency
+trace.fe=seismic.fe;
 
 % obtain time sampling interval of seismic data
 trace.dt=1.0/seismic.fe;

@@ -97,6 +97,9 @@ if isfield(mcm,'datat0')
     seismic.t0=mcm.datat0;
 end
 
+% show the spectrogram of the original seismic data
+ispectrogram(seismic);
+
 if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
     % use pre-calculated traveltime tables and source imaging points
     load(mcm.prefile,'stations','search'); % load in the 'stations' and the 'search' parameter
