@@ -176,8 +176,8 @@ end
 
 mcm.datat0=seismic.t0; % the starting time (t0) of seismic data, datetime
 
-% mcm.test.timerg: time range for loading the catalog data
-mcm.test.timerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
+% mcm.dtimerg: time range of the seismic data
+mcm.dtimerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
 
 
 % check if need to run the MCM program
@@ -213,9 +213,27 @@ switch mcm.run
         migv=runmcm_matlab_test(trace,mcm,search,earthquake);
         
     case 3
-        fprintf('Run MCM Matlab program.\n');
+        fprintf('Run MCM Matlab testing program with an input time range.\n');
+        
+        % chech if the input time range are feasible
+        if mcm.test.mtrg(1)<mcm.dtimerg(1) || mcm.test.mtrg(1)>mcm.test.mtrg(2) || mcm.test.mtrg(2)>=mcm.dtimerg(2)
+            error('Incorrect input for mcm.test.mtrg! Not applicable.');
+        end
+        
+        % obtain the searching origin time serials
+        time_start=seconds(mcm.test.mtrg(1)-mcm.datat0); % starting time for migration, relative to data_t0 in second
+        time_end=seconds(mcm.test.mtrg(2)-mcm.datat0); % ending time for migration, relative to data_t0 in second
+        mcm.st0=time_start:mcm.dt0:time_end;
+        
+        % run mcm in the input time range
+        migv=runmcm_matlab_test(trace,mcm,search);
         
     case 4
+        fprintf('Run MCM Matlab program.\n');
+        
+        [migv,mcm]=runmcm_matlab(trace,mcm,search);
+        
+    case 99
         fprintf('Run MCM Fortran-OpenMP program.\n');
         
     otherwise

@@ -19,17 +19,29 @@ function [tn,xn,yn,zn]=migmaxplt(data,soup,tarxr,taryr,tarzr)
 % yn: Y index;
 % zn: Z index.
 
-[~,nxr,nyr,nzr]=size(data);
-xxr=linspace(tarxr(1),tarxr(2),nxr);
-yyr=linspace(taryr(1),taryr(2),nyr);
-zzr=linspace(tarzr(1),tarzr(2),nzr);
-[~,s1id(1)]=min(abs(xxr-soup(1)));
-[~,s1id(2)]=min(abs(yyr-soup(2)));
-[~,s1id(3)]=min(abs(zzr-soup(3)));
 
 % find the position of the maximum value in the 4D data
 [~,indx]=max(data(:)); % index of maximum value in the 1D data
 [tn,xn,yn,zn]=ind2sub(size(data),indx); % transfer the index to 4D subscribs
+
+
+% define source location
+[~,nxr,nyr,nzr]=size(data);
+xxr=linspace(tarxr(1),tarxr(2),nxr);
+yyr=linspace(taryr(1),taryr(2),nyr);
+zzr=linspace(tarzr(1),tarzr(2),nzr);
+if ~isempty(soup)
+    % have input for source location
+    [~,s1id(1)]=min(abs(xxr-soup(1)));
+    [~,s1id(2)]=min(abs(yyr-soup(2)));
+    [~,s1id(3)]=min(abs(zzr-soup(3)));
+else
+    % no input for source location, define the source using the maximum
+    % migration value in the data
+    s1id=[xn,yn,zn]; % the index of the source, i.e. the point having the maximum migration value
+    soup=[xxr(xn),yyr(yn),zzr(zn)]; % the location of the source
+end
+
 
 % load a specified colormap
 load mycolor1.mat;
@@ -66,7 +78,7 @@ plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor
 axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
 
 % Plot the stacking function at the located source position
-figure; plot(data(:,xn,yn,zn),'k'); 
+figure; plot(data(:,xn,yn,zn),'k');
 xlabel('Time samples'); ylabel('Stacked energy'); title('Stacking trace at the located source position');
 axis tight;
 

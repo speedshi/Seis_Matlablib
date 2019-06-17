@@ -11,6 +11,7 @@ function [s_pro,n_var]=mcm_test_para(trace,mcm,search,earthquake,fshow)
 % mcm.phasetp: specify seismic phase used for migration, scalar;
 % mcm.tpwind: P-phase time window length in second, scalar;
 % mcm.tswind: S-phase time window length in second, scalar;
+% mcm.stationid: the id of the stations to show spectrogram;
 % search: matlab structure, describe the imaging area,
 % search.soup: source imaging positions, 2D array, ns*3, in meter;
 % earthquake: matlab structure, contains the location and origin time of the earthquake;
@@ -29,6 +30,9 @@ function [s_pro,n_var]=mcm_test_para(trace,mcm,search,earthquake,fshow)
 if nargin<5
     fshow=true;
 end
+
+% calculate the characteristic function
+trace.data=transpose(cal_charfunc(trace.data',mcm.cfuntp));
 
 % the location of the earthquake, in meter
 soup_cata=[earthquake.north earthquake.east earthquake.depth];
@@ -119,9 +123,11 @@ switch mcm.phasetp
         
 end
 
-% show the seismogram and spectrogram
-i_station=1; % specify to show which station
-ispectrogram_1(edata(:,i_station),trace.dt,trace.name{i_station},2);
+if fshow
+    % show the seismogram and spectrogram
+    i_station=mcm.stationid; % specify to show which station
+    ispectrogram_1(edata(:,i_station),trace.dt,trace.name{i_station},2);
+end
 
 [nt,~]=size(edata); % obtain the number of time samples and stations
 
@@ -134,8 +140,24 @@ switch mcm.phasetp
         nn=nt-n_win+1; % number of migration time points
         migv=zeros(nn,1); % initialize the migration value array
         
-        for it=1:nn
-            migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
+        % do migration
+        switch mcm.migtp
+            case 0
+                % MCM
+                fprintf('Use MCM to locate the earthquake.\n');
+                for it=1:nn
+                    migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
+                end
+                
+            case 1
+                % conventional migration
+                fprintf('Use conventional DSI to locate the earthquake.\n');
+                for it=1:nn
+                    migv(it)=stkcharfunc(edata(it:it+n_win-1,:));
+                end
+                
+            otherwise
+                error('Incorrect input for mcm.migtp.\n');
         end
         
         if fshow
@@ -158,8 +180,24 @@ switch mcm.phasetp
         nn=nt-n_win+1; % number of migration time points
         migv=zeros(nn,1); % initialize the migration value array
         
-        for it=1:nn
-            migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
+        % do migration
+        switch mcm.migtp
+            case 0
+                % MCM
+                fprintf('Use MCM to locate the earthquake.\n');
+                for it=1:nn
+                    migv(it)=stkcorrcoef(edata(it:it+n_win-1,:));
+                end
+                
+            case 1
+                % conventional migration
+                fprintf('Use conventional DSI to locate the earthquake.\n');
+                for it=1:nn
+                    migv(it)=stkcharfunc(edata(it:it+n_win-1,:));
+                end
+                
+            otherwise
+                error('Incorrect input for mcm.migtp.\n');
         end
         
         if fshow
@@ -187,12 +225,30 @@ switch mcm.phasetp
         nn=nt-n_intv-n_wins; % number of migration time points
         migv=zeros(nn,1); % initialize the migration value array
         
-        for it=1:nn
-            cc_p=stkcorrcoef(edata(it:it+n_winp-1,:)); % stacked CC of P
-            cc_s=stkcorrcoef(edata((it+n_intv+1):(it+n_intv+1+n_wins-1),:)); % stacked CC of S
-            migv(it)=0.5*(cc_p+cc_s); % final migration value
+        % do migration
+        switch mcm.migtp
+            case 0
+                % MCM
+                fprintf('Use MCM to locate the earthquake.\n');
+                for it=1:nn
+                    cc_p=stkcorrcoef(edata(it:it+n_winp-1,:)); % stacked CC of P
+                    cc_s=stkcorrcoef(edata((it+n_intv+1):(it+n_intv+1+n_wins-1),:)); % stacked CC of S
+                    migv(it)=0.5*(cc_p+cc_s); % final migration value
+                end
+                
+            case 1
+                % conventional migration
+                fprintf('Use conventional DSI to locate the earthquake.\n');
+                for it=1:nn
+                    cc_p=stkcharfunc(edata(it:it+n_winp-1,:)); % stacked value of P
+                    cc_s=stkcharfunc(edata((it+n_intv+1):(it+n_intv+1+n_wins-1),:)); % stacked value of S
+                    migv(it)=0.5*(cc_p+cc_s); % final migration value
+                end
+                
+            otherwise
+                error('Incorrect input for mcm.migtp.\n');
         end
-        
+
         if fshow
             % show the migration values
             figure;

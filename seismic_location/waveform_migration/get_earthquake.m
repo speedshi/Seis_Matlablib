@@ -5,7 +5,7 @@ function earthquake=get_earthquake(mcm,search)
 % INPUT--------------------------------------------------------------------
 % mcm: structure, containing the catalog and earthquake information;
 % mcm.test.cataname: string, the file name of the input catalog, in IRIS text format;
-% mcm.test.timerg: datetime, 2*1, the time range for loading the catalog data;
+% mcm.dtimerg: datetime, 2*1, the time range of the seismic data;
 % mcm.test.cataid: the event id of the earthquake in the catalog;
 % mcm.datat0: datetime, the starting time (t0) of seismic data;
 % search: structure, used to select events in the specific zone;
@@ -27,7 +27,7 @@ end
 
 
 % read in catalog data
-catalog=read_catalog(mcm.test.cataname,mcm.test.timerg,search);
+catalog=read_catalog(mcm.test.cataname,mcm.dtimerg,search);
 
 % obtain the relative tested origin time (relative to data t0), in second
 earthquake.t0=seconds(catalog.time(mcm.test.cataid)-mcm.datat0);

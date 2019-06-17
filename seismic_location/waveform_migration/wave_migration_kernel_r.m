@@ -1,5 +1,7 @@
-function migv=wave_migration_kernel(trace,mcm,search)
+function migv=wave_migration_kernel_r(trace,mcm,search)
 % This function is the MCM kernal.
+% The program only saves the maximum migration value at a particular search
+% origin time.
 %
 % INPUT--------------------------------------------------------------------
 % trace: matlab structure, contains seismic data information;
@@ -14,12 +16,11 @@ function migv=wave_migration_kernel(trace,mcm,search)
 % of input seismic data), vector, nst0*1;
 % mcm.migtp: specify the migration method: 0 for MCM; 1 for DSI;
 % search: matlab structure, describe the imaging area;
-% search.nsnr: number of imaging points in the north direction, scalar;
-% search.nser: number of imaging points in the east direction, scalar;
-% search.nsdr: number of imaging points in the depth direction, scalar;
+% search.soup: source imaging positions, 2D array, nsr*3, in meter;
 %
 % OUTPUT-------------------------------------------------------------------
-% migv: migration volume, 4D volume, nsnr*nser*nsdr*nst0.
+% migv: migration volume, 2D array, shape: nst0*5; for each row:
+% Origin_time-North-East-Depth-Migration_value;
 
 
 migtp=mcm.migtp; % the migration method: 0 for MCM; 1 for DSI
@@ -51,10 +52,19 @@ nswd=round(mcm.tswind/dt)+1; % S-wave time window in points
 
 nst0=max(size(st0)); % number of searched origin time points
 
-migv=zeros(nsr,nst0); % initial migration volume
+migv=zeros(nst0,5); % initial the final output migration volume
 
-parfor it=1:nst0
-    for id=1:nsr
+migv_s=zeros(nsr,1); % initial migration volume for one origin time
+
+rsfold='./results'; % name of the output folder
+mkdir(rsfold); cd(rsfold); % make and enter the output folder
+fname='event_location.dat'; % file name of the ouput file
+fid=fopen(fname,'wt'); % open the file for output
+fprintf(fid,'%d\n',nst0); % write the total number of origin times into the file
+
+
+for it=1:nst0
+    parfor id=1:nsr
         
         tvpn=round((travelp(id,:)+st0(it))/dt)+1; % time point of direct P-wave for this source position
         tvsn=round((travels(id,:)+st0(it))/dt)+1; % time point of direct S-wave for this source position
@@ -76,12 +86,21 @@ parfor it=1:nst0
             scc=stkcharfunc(cova_s); % stacked characteristic function of S phase
         end
         
-        migv(id,it)=0.5*(pcc+scc); % the final migration value
+        migv_s(id)=0.5*(pcc+scc); % the migration value
         
     end
+    
+    [vmax,indx]=max(migv_s); % obtain the value and index of the maximum migration value
+    migv(it,1)=st0(it); % origin time, in second relative to data t0
+    migv(it,2:4)=search.soup(indx,:); % potential source locations
+    migv(it,5)=vmax; % migration value at this origin time
+    
+    % write the results to the file
+    fprintf(fid,'  %18.6f  %18.6f  %18.6f  %18.6f  %16.8e\n',migv(it,:));
 end
 
-% reformat the migration volume, obtain the 4D matrix
-migv=reshape(migv,[search.nsnr search.nser search.nsdr nst0]); % reshape to 4D data volume
+
+fclose(fid);
+cd('..');
 
 end
