@@ -16,7 +16,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % file.seismic: file name (including path) of the seismic data, a string or cell array;
 % file.stations: file name (including path) of the stations, a string;
 % file.velocity: file name (including path) of the velocity model, a string;
-% search: matlab structure, contains the imaging area information,
+% search: matlab structure, contains the imaging area information;
 % search.north: 1*2, imaging area in the north direction, in meter,
 % search.east: 1*2, imaging area in the east direction, in meter,
 % search.depth: 1*2, imaging area in the depth direction, in meter;
@@ -104,25 +104,6 @@ if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
     % use pre-calculated traveltime tables and source imaging points
     load(mcm.prefile,'stations','search'); % load in the 'stations' and the 'search' parameter
     
-    % obtain MCM required input files
-    % generate binary file of source imaging positions
-    fid=fopen([folder '/soupos.dat'],'w');
-    fwrite(fid,search.soup,precision);
-    fclose(fid);
-    
-    % generate binary file of traveltime tables
-    if isfield(stations,'travelp') && ~isempty(stations.travelp)
-        % for P-wave traveltimes
-        fid=fopen([folder '/travelp.dat'],'w');
-        fwrite(fid,stations.travelp,precision);
-        fclose(fid);
-    end
-    if isfield(stations,'travels') && ~isempty(stations.travels)
-        % for S-wave traveltimes
-        fid=fopen([folder '/travels.dat'],'w');
-        fwrite(fid,stations.travels,precision);
-        fclose(fid);
-    end
 else
     % need to calculate traveltime tables
     % read in station information
@@ -133,7 +114,7 @@ else
     
     % obtain MCM required input files
     % generate binary file of source imaging positions
-    [search.soup,search.snr,search.ser,search.sdr,search.nsnr,search.nser,search.nsdr]=gene_soup(search.north,search.east,search.depth,search.dn,search.de,search.dd,precision);
+    [search.soup,search.snr,search.ser,search.sdr,search.nsnr,search.nser,search.nsdr]=gene_soup(search.north,search.east,search.depth,search.dn,search.de,search.dd,precision,[]);
     
     % generate traveltime tables
     stations=gene_traveltime(model,stations,search,precision,[],[]);
@@ -145,7 +126,7 @@ if ~isfield(mcm,'filter')
 end
 
 % generate binary files for seismic data and traveltimes
-trace=gene_wavetime(seismic,stations,mcm.filter,precision);
+trace=gene_wavetime(seismic,stations,mcm.filter,precision,[],[],[]);
 
 % assemble the station positions, X-Y-Z i.e. North-East-Depth
 trace.recp=[trace.north(:) trace.east(:) trace.depth(:)];
@@ -161,16 +142,11 @@ if isfield(mcm,'migtp')
     mcm.spaclim=0; % the space limit in searching for potential seismic events, in meter (m)
     mcm.timelim=0; % the time limit in searching for potential seismic events, in second (s)
     mcm.nssot=1; % the maximum number of potential seismic events can be accept for a single origin time
-    gene_migpara(mcm); % generate the text file
 end
 
 
-addrs=sprintf('%s/info.mat',folder); % name of output file
-% output matlab format data, can be used for later
-save(addrs,'trace','search','mcm');
-
 if ~isfield(mcm,'run')
-    mcm.run=0;
+    mcm.run=-1;
 end
 
 
@@ -182,6 +158,10 @@ mcm.dtimerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
 
 % check if need to run the MCM program
 switch mcm.run
+    case -1
+        fprintf('No MCM program is running. Just generate the input files for MCM Fortran program.\n');
+        gene_mcmifiles(trace,search,mcm,precision);
+        
     case 0
         fprintf('Run MCM parameter testing program at the source location.\n');
         
@@ -237,7 +217,7 @@ switch mcm.run
         fprintf('Run MCM Fortran-OpenMP program.\n');
         
     otherwise
-        fprintf('No MCM program is running. Just generate the input files for MCM Fortran program.\n');
+        fprintf('No MCM program is running. Just load in data.\n');
 end
 
 cd('..');

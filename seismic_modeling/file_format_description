@@ -28,7 +28,7 @@ Right-hand coordinate systerm in Cartesian coordinate. X: North; Y: East; Z: ver
 
 
 (3) model file, homogeneous model or layered model. If there is only one layer, it is a homogeneous model. For layered models, the bottom layer is assumed to be a half space.
-0                                                         | float. Reference starting depth (free surface) in meter, can be negtive or positive. Normally is 0, which means the depth of free surface is 0.
+0                                                         | float. Reference starting depth (free surface) in meter, can be negtive or positive. Normally is 0, which means the depth of free surface is 0 (sea-level). Positive means the free surface is below sea-level (at depth); negative means the free surface is above the sea-level; e.g. this reference starting depth of the model = -elevation.
 100    3500      2000      2000      1000      1000       | float-float-float-float. Thickness(m)-Vp(m/s)-Vs(m/s)-density(kg/m^3)-Qp(attenuation of P wave)-Qs(attenuation of S wave) of the layer 1. Qp and Qs are optional parameters.
 ...                                                       | float-float-float-float. Thickness(m)-Vp(m/s)-Vs(m/s)-density(kg/m^3)-Qp(attenuation of P wave)-Qs(attenuation of S wave) of the layer 2. Qp and Qs are optional parameters.
 

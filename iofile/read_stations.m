@@ -1,4 +1,4 @@
-function stations=read_stations(fname)
+function stations=read_stations(fname,select)
 % This function is used to read the station file to obtain station
 % information such as the name and location.
 %
@@ -20,12 +20,23 @@ function stations=read_stations(fname)
 % which explains the meaning of each column thereafter.
 % INPUT-----------------------------------------------
 % fname: file name including path of the station file;
+% select: structure, select stations that fullfill the requirements;
+% select.name: only select the named stations;
+%
 % OUTPUT----------------------------------------------
 % stations: structure, contains  metadata of each station;
 % stations.name: cell array, the name of each station;
 % stations.north: vector, North components of the position of each station;
 % stations.east: vector, East components of the position of each station;
-% stations.depth: vector, Depth components of the position of each station.
+% stations.depth: vector, Depth components of the position of each station;
+% stations.latitude: vector, latitude in degree of each station;
+% stations.longitude: vector, longitude in degree of each station;
+% stations.elevation: vector, elevation in meter of each station;
+
+
+if nargin < 2
+    select=[];
+end
 
 opts=detectImportOptions(fname);
 opts.VariableNames{1}='Network'; % set the name of the first colume
@@ -63,10 +74,29 @@ for ii=2:nnr
         
         % Obtain Cartesian coordinates of the stations
         [stations.east(nr),stations.north(nr),stations.depth(nr)]=geod2cart(stall.Latitude(ii),stall.Longitude(ii),stall.Elevation(ii)-stall.Depth(ii));
+        
+        % Obtain the geographic information of the stations
+        stations.latitude(nr)=stall.Latitude(ii);
+        stations.longitude(nr)=stall.Longitude(ii);
+        stations.elevation(nr)=stall.Elevation(ii)-stall.Depth(ii);
     end
     
 end
 
+
+if ~isempty(select)
+    % select the stations that fullfill the requirements
+    lindx=ismember(stations.name,select.name);
+    
+    stations.name=stations.name(lindx);
+    stations.east=stations.east(lindx);
+    stations.north=stations.north(lindx);
+    stations.depth=stations.depth(lindx);
+    stations.latitude=stations.latitude(lindx);
+    stations.longitude=stations.longitude(lindx);
+    stations.elevation=stations.elevation(lindx);
+    
+end
 
 
 end

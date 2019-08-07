@@ -67,24 +67,26 @@ end
 stations.travelp=[];
 stations.travels=[];
 
+soup=search.soup; % positions of source imaging points
+
 % correct for the non-zero reference starting depth of the model,
 % because by default the 'tvtcalrt' program assumes the free surface of the
 % model is at 0 depth (sea-level).
 recp_z=stations.depth-model.rsd0; % correct depth values for stations
-search.soup(:,3)=search.soup(:,3)-model.rsd0; % correct depth values for source imaging points
+soup(:,3)=search.soup(:,3)-model.rsd0; % correct depth values for source imaging points
 
 recp=[stations.north(:) stations.east(:) recp_z(:)]; % N-E-D
 
 if length(model.thickness)==1
     % homogeneous model
-    [stations.travelp,stations.travels,~,~]=tvtcalrt_homo(model.vp/1000.,model.vs/1000.,search.soup/1000.,recp/1000.);
+    [stations.travelp,stations.travels,~,~]=tvtcalrt_homo(model.vp/1000.,model.vs/1000.,soup/1000.,recp/1000.);
 else
     % layered model
     if ~isempty(model.vp)
-        [stations.travelp,~,~]=tvtcalrt_ly(model.vp/1000.,model.thickness/1000.,search.soup/1000.,recp/1000.); % note the unit transfer
+        [stations.travelp,~,~]=tvtcalrt_ly(model.vp/1000.,model.thickness/1000.,soup/1000.,recp/1000.); % note the unit transfer
     end
     if ~isempty(model.vs)
-        [stations.travels,~,~]=tvtcalrt_ly(model.vs/1000.,model.thickness/1000.,search.soup/1000.,recp/1000.); % note the unit transfer
+        [stations.travels,~,~]=tvtcalrt_ly(model.vs/1000.,model.thickness/1000.,soup/1000.,recp/1000.); % note the unit transfer
     end
 end
 

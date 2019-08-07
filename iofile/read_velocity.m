@@ -12,7 +12,7 @@ function model=read_velocity(fname)
 % NOTE: If there is only one layer, it is a homogeneous model. Negative
 % reference starting depth means the free surface is above the sea-level;
 % positive reference starting depth means the free surface of the model is
-% below the sea-level.
+% below the sea-level; e.g. equals to '-1*elevation'.
 %
 % INPUT-----------------------------------------------------
 % fname: file name including path of the velocity model;

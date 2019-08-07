@@ -51,10 +51,16 @@ end
 
 % print information
 fprintf('Find %d stations.\n',snum);
-fprintf('Station names:');
-for ii=1:snum
-    fprintf(' %s',sname{ii});
+if snum>0
+    % find stations
+    fprintf('Station names:');
+    for ii=1:snum
+        fprintf(' %s',sname{ii});
+    end
+    fprintf('.\n');
+else
+    % does not find any stations
+    sname=[];
 end
-fprintf('.\n');
 
 end

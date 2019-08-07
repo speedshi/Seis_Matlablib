@@ -1,4 +1,4 @@
-function search=modelgeo_show(file_stations,file_velocity,search,earthquake)
+function search=modelgeo_show(file_stations,file_velocity,search,earthquake,select)
 % This function is used to dispaly the geometries of the model and
 % stations.
 % Units: meter, m/s, degree;
@@ -15,14 +15,19 @@ function search=modelgeo_show(file_stations,file_velocity,search,earthquake)
 % earthquake.latitude: vector, latitude of earthquakes, in degree,
 % earthquake.longitude: vector, longitude of earthquakes, in degree,
 % earthquake.depth: vector, depth of earthquakes below the sea-level, in meter;
+% select: structure, select stations that fullfill the requirements;
+% select.name: only select the named stations;
 %
 % OUTPUT-------------------------------------------------------------------
 % search: imaging area;
 % a figure that show the geometries.
 
+if nargin < 5
+   select=[]; 
+end
 
 % obtain station information
-stations=read_stations(file_stations); % read in station information in IRIS text format
+stations=read_stations(file_stations,select); % read in station information in IRIS text format
 
 % obtain model information
 model=read_velocity(file_velocity); % read in velocity model, now only accept homogeneous and layered model
