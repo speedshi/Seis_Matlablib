@@ -7,6 +7,12 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % stations. This program is used to select and output the waveforms
 % that are also in the structure 'stations'.
 %
+% If three-component data are avaliable, the program will also do the same
+% process (i.e. filtering) on these components. e.g.:
+% seismic.zdata: Z component; 
+% seismic.ndata: N component; 
+% seismic.edata: E component;
+%
 % If empty file names ([]) are given, then do not output the corresponding
 % binary files.
 %
@@ -43,7 +49,10 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % trace.depth: depth coordinates of selected stations, vector, 1*n_sta;
 % trace.t0: matlab datetime, the starting time of traces;
 % trace.travelp: P-wave traveltime table, 2D array, ns*n_sta;
-% trace.travels: S-wave traveltime table, 2D array, ns*n_sta.
+% trace.travels: S-wave traveltime table, 2D array, ns*n_sta;
+% trace.zdata: Z component data if exist, 2D array, n_sta*nt;
+% trace.ndata: N component data if exist, 2D array, n_sta*nt;
+% trace.edata: E component data if exist, 2D array, n_sta*nt;
 
 
 
@@ -119,6 +128,17 @@ for ir=1:nr
         if ~isempty(stations.travels)
             trace.travels(:,n_sta)=stations.travels(:,ir); % S-wave traveltime table
         end
+        % if three-component data are avaliable, do it!
+        if isfield(seismic,'zdata')
+            trace.zdata(n_sta,:)=seismic.zdata(indx,:);
+        end
+        if isfield(seismic,'ndata')
+            trace.ndata(n_sta,:)=seismic.ndata(indx,:);
+        end
+        if isfield(seismic,'edata')
+            trace.edata(n_sta,:)=seismic.edata(indx,:);
+        end
+        
     elseif sum(indx)==0
         % no seismic data for this station is found.
         fprintf("No seismic data are found for the station '%s'.\n",stations.name{ir});
@@ -163,6 +183,16 @@ if ~isempty(ffilter)
     [bb,aa]=butter(ffilter.order,ffilter.freq/f_nyqt,ffilter.type);
     for ir=1:n_sta
         trace.data(ir,:)=filter(bb,aa,trace.data(ir,:));
+        % if three-component data exist, do it!
+        if isfield(trace,'zdata')
+            trace.zdata(ir,:)=filter(bb,aa,trace.zdata(ir,:));
+        end
+        if isfield(trace,'ndata')
+            trace.ndata(ir,:)=filter(bb,aa,trace.ndata(ir,:));
+        end
+        if isfield(trace,'edata')
+            trace.edata(ir,:)=filter(bb,aa,trace.edata(ir,:));
+        end
     end
 end
 

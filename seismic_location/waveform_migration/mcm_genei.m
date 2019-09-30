@@ -2,8 +2,9 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % This function is used to generate the required input files for MCM.
 % Unit: meter, m/s, degree.
 %
-% Accepted seismic data format: h5, SAC
-% Accepted station file format: IRIS text
+% Accepted seismic data format: HDF5, SAC;
+% Accepted station file format: IRIS text;
+% Accepted catalog file format: IRIS text;
 %
 % The seismic data of different traces should have the same length, the
 % same sampling rate and also start at the same time.
@@ -57,7 +58,8 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % search.nsdr: number of imaging points in the depth direction, scalar;
 % mcm: matlab structure, MCM parameters and configuration information.
 
-% set default value
+
+% set default parameters---------------------------------------------------
 if nargin==2
     mcm=[];
     precision='double';
@@ -69,10 +71,17 @@ if isempty(precision)
     precision='double';
 end
 
+% set default seismic data component to perform migration
+if ~isfield(mcm,'component')
+    mcm.component='Z';
+end
+
 % set default working directory
 if ~isfield(mcm,'workfolder')
     mcm.workfolder='mcm';
 end
+
+
 
 % check if the working directory exists, if not, then create it
 mcm.workfolder=['./' mcm.workfolder];

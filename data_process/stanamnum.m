@@ -1,5 +1,6 @@
 function [sname,snum]=stanamnum(file_seismic,file_stations)
-% This function is used to obtain the number and names of stations in the data.
+% This function is used to obtain the number and names of stations in the HDF5 file.
+% The stations must exist in the 'file_stations' as well.
 %
 % INPUT--------------------------------------------------------------------
 % file_seismic: file name of the H5 seismic file;
@@ -7,43 +8,34 @@ function [sname,snum]=stanamnum(file_seismic,file_stations)
 %
 % OUTPUT-------------------------------------------------------------------
 % sname: name of the stations;
-% snum: number of the stations;
+% snum: total number of the stations;
+
 
 % set default value
 if nargin==1
     file_stations=[];
 end
 
-info=h5info(file_seismic); % obtain the metadata information of seismic data
 
-seismic.network=info.Groups(1).Name(2:end); % obtain the network name
 
-lnet=length(seismic.network); % obtain the length of network name
+% read in the names of stations/trace in the seismic file
+[seismic.name, nsta]=read_staname(file_seismic);
 
-ns=length(info.Groups(1).Groups); % obtain the number of stations
 
-for ii=1:ns
-    seismic.sname{ii}=info.Groups(1).Groups(ii).Name(lnet+3:end); % obtain the name of stations
-    
-    % remove the void location name
-    name_temp=seismic.sname{ii};
-    if strcmp(name_temp(end-2:end),'.00')
-        seismic.sname{ii}=name_temp(1:end-3);
-    end
-end
 
+% check if all the stations are in the input 'file_station' file-----------
 if isempty(file_stations)
     % no input station file
-    sname=seismic.sname;
-    snum=ns;
+    sname=seismic.name;
+    snum=nsta;
 else
     % have input station file
     stations=read_stations(file_stations);
     snum=0;
-    for ii=1:ns
-        if ismember(seismic.sname{ii},stations.name)
+    for ii=1:nsta
+        if ismember(seismic.name{ii},stations.name)
             snum=snum+1;
-            sname{snum}=seismic.sname{ii};
+            sname{snum}=seismic.name{ii};
         end
     end
     

@@ -5,6 +5,12 @@ function gene_mcmifiles(trace,search,mcm,precision,fname_r,fname_d,fname_p,fname
 % If the file names are set to be empty, the the binary file will not be
 % output.
 %
+% If three-component data are available, output the three-component data as
+% well. e.g.:
+% trace.zdata: Z component data, default name: waveform.dat.z;
+% trace.ndata: N component data, default name: waveform.dat.n;
+% trace.edata: E component data, default name: waveform.dat.e;
+%
 % INPUT--------------------------------------------------------------------
 % trace: matlab structure, contain selected data information;
 % trace.data: seismic data, 2D array, n_sta*nt;
@@ -104,7 +110,23 @@ gene_migpara(mcm); % generate the text file
 
 % output matlab format data of seismic data and the related information, can be used for later
 addrs=sprintf('%s/info.mat',folder); % name of output file
-save(addrs,'trace','search','mcm');
+save(addrs,'trace','search','mcm','-v7.3');
 
+% if three-component data are available, output them
+if isfield(trace,'zdata') && ~isempty(trace.zdata)
+    fid=fopen([folder '/' fname_d '.z'],'w');
+    fwrite(fid,trace.zdata,precision);
+    fclose(fid);
+end
+if isfield(trace,'ndata') && ~isempty(trace.ndata)
+    fid=fopen([folder '/' fname_d '.n'],'w');
+    fwrite(fid,trace.ndata,precision);
+    fclose(fid);
+end
+if isfield(trace,'edata') && ~isempty(trace.edata)
+    fid=fopen([folder '/' fname_d '.e'],'w');
+    fwrite(fid,trace.edata,precision);
+    fclose(fid);
+end
 
 end

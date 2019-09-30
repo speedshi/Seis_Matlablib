@@ -35,8 +35,23 @@ stations.hdistance=sqrt((stations.north-point.north).^2+(stations.east-point.eas
 % sort the horizontal distance in ascending order
 [~,indx]=sort(stations.hdistance);
 
+
+% show the basemap with stations and events
+plot_evesta(stations,point);
+
+
+n_sta=length(stations.name); % total number of stations in the input station file
+% show the distances
+figure;
+plot(stations.hdistance(indx)/1000,'k-o','linewidth',1.5,'markerfacecolor','k');
+axis tight;
+set(gca,'xtick',1:n_sta,'xticklabel',stations.name(indx),'xticklabelrotation',90);
+xlabel('Station code');
+ylabel('Distance from epicenter (km)');
+
+
 % select stations which are closer to the point
-if num>0
+if num>0 && num<n_sta
     % select the first 'num' stations according to the distance
     sltsname=stations.name(indx(1:num));
 else

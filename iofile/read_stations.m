@@ -53,11 +53,15 @@ end
 % stations.name{1}=[snamelist{1} '.' Location];
 stations.name{1}=snamelist{1};
 
-nr=1;
+% Obtain geographic coordinates of the station
+stations.latitude(1)=stall.Latitude(1);
+stations.longitude(1)=stall.Longitude(1);
+stations.elevation(1)=stall.Elevation(1)-stall.Depth(1);
 
 % Obtain Cartesian coordinates of the station
 [stations.east(1),stations.north(1),stations.depth(1)]=geod2cart(stall.Latitude(1),stall.Longitude(1),stall.Elevation(1)-stall.Depth(1));
 
+nr=1;
 for ii=2:nnr
     
     if ~ismember(stall.Station{ii},snamelist)
@@ -72,9 +76,6 @@ for ii=2:nnr
         %stations.name{nr}=[snamelist{nr} '.' Location];
         stations.name{nr}=snamelist{nr};
         
-        % Obtain Cartesian coordinates of the stations
-        [stations.east(nr),stations.north(nr),stations.depth(nr)]=geod2cart(stall.Latitude(ii),stall.Longitude(ii),stall.Elevation(ii)-stall.Depth(ii));
-        
         % Obtain the geographic information of the stations
         stations.latitude(nr)=stall.Latitude(ii);
         stations.longitude(nr)=stall.Longitude(ii);
@@ -82,6 +83,12 @@ for ii=2:nnr
     end
     
 end
+
+
+% Obtain Cartesian coordinates of the stations
+% Note, in order to use the same UTM zone to convert coordinate system, all
+% stations must be transfered together!
+[stations.east,stations.north,stations.depth]=geod2cart(stations.latitude,stations.longitude,stations.elevation);
 
 
 if ~isempty(select)
