@@ -5,7 +5,7 @@ function seismic=read_seis(fname,comp)
 % The function utilize the suffix to decide the format of the input seismic
 % data and then call the corresponding functions to read the seismic data.
 %
-% Accept seismic data format: HDF5, SAC.
+% Accept seismic data format: HDF5, SAC, MAT.
 %
 % For HDF5 data format, we can read in 3-component data now!
 %
@@ -59,6 +59,13 @@ if strcmp(fname{1}(end-2:end),'.h5') || strcmp(fname{1}(end-2:end),'.H5')
 elseif strcmp(fname{1}(end-3:end),'.sac') || strcmp(fname{1}(end-3:end),'.SAC')
     % read in the SAC format data
     seismic=read_seissac(fname);
+    seismic.component=comp; % reset the data component
+    
+elseif strcmp(fname{1}(end-3:end),'.mat') || strcmp(fname{1}(end-3:end),'.MAT')
+    % read in the MAT format data
+    seismic=read_seismat(fname{1});  % all in one file
+    seismic.component=comp; % reset the data component
+    
 else
     error('Unrecognised format of seismic data.');
 end

@@ -4,7 +4,7 @@ function seismic=read_seish5(fname,component)
 % The seismic data of different traces and components must have the same
 % length, the same sampling rate and also start at the same time.
 %
-% At the present, it is only valid for reading one component dataset.
+% It can read different components.
 % The H5 data should be oganized as follows:
 % /NETWORK_NAME (contains different stations)
 % --/NETWORK_NAME/STATION_NAME (contains single component data)
@@ -17,7 +17,7 @@ function seismic=read_seish5(fname,component)
 % component: cell array, can be 'Z' 'N' 'E', component of seismic data to read;
 % OUTPUT-------------------------------------------------
 % seismic: structure, contains seismic data and metadata of each station;
-% seismic.network: cell array, the name of the networks;
+% seismic.network: cell array, 1*ns, the name of the networks;
 % seismic.component: cell array, the name of the data component (usually N, E or Z);
 % seismic.name: cell array, 1*ns, contains the name of each station;
 % seismic.fe: scaler, the sampling frequency of the data, in Hz;

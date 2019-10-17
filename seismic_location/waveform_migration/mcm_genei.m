@@ -2,7 +2,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % This function is used to generate the required input files for MCM.
 % Unit: meter, m/s, degree.
 %
-% Accepted seismic data format: HDF5, SAC;
+% Accepted seismic data format: HDF5, SAC, MAT;
 % Accepted station file format: IRIS text;
 % Accepted catalog file format: IRIS text;
 %
