@@ -23,17 +23,8 @@ function [migv,mcm]=runmcm_matlab(trace,mcm,search)
 % mcm: strucure, contains the MCM parameters;
 
 
-% determine the searched origin times of MCM; in second (relative to start
-% time of input seismic data)
-time_start=0;
-if mcm.phasetp==0
-    % only use P-phase
-    time_end=(size(trace.data,2)-1)*trace.dt-max(trace.travelp(:));
-else
-    % also use S-phase
-    time_end=(size(trace.data,2)-1)*trace.dt-max(trace.travels(:));
-end
-mcm.st0=time_start:mcm.dt0:time_end;
+% determine the searched origin times
+mcm=detmst0(mcm,trace);
 
 % calculate the characteristic function
 trace.data=transpose(cal_charfunc(trace.data',mcm.cfuntp));

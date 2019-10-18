@@ -107,7 +107,9 @@ if isfield(mcm,'datat0')
 end
 
 % show the spectrogram of the original seismic data
-ispectrogram(seismic);
+if isfield(mcm,'stationid') && ~isempty(mcm.stationid)
+    ispectrogram(seismic,mcm.stationid);
+end
 
 if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
     % use pre-calculated traveltime tables and source imaging points
@@ -204,15 +206,20 @@ switch mcm.run
     case 3
         fprintf('Run MCM Matlab testing program with an input time range.\n');
         
-        % chech if the input time range are feasible
-        if mcm.test.mtrg(1)<mcm.dtimerg(1) || mcm.test.mtrg(1)>mcm.test.mtrg(2) || mcm.test.mtrg(2)>=mcm.dtimerg(2)
-            error('Incorrect input for mcm.test.mtrg! Not applicable.');
+        if isfield(mcm,'test') && isfield(mcm.test,'mtrg')
+            % chech if the input time range are feasible
+            if mcm.test.mtrg(1)<mcm.dtimerg(1) || mcm.test.mtrg(1)>mcm.test.mtrg(2) || mcm.test.mtrg(2)>=mcm.dtimerg(2)
+                error('Incorrect input for mcm.test.mtrg! Not applicable.');
+            end
+            
+            % obtain the searching origin time serials            
+            time_start=seconds(mcm.test.mtrg(1)-mcm.datat0); % starting time for migration, relative to data_t0 in second
+            time_end=seconds(mcm.test.mtrg(2)-mcm.datat0); % ending time for migration, relative to data_t0 in second
+            mcm.st0=time_start:mcm.dt0:time_end;
+        else
+            % set default searching time range
+            mcm=detmst0(mcm,trace);
         end
-        
-        % obtain the searching origin time serials
-        time_start=seconds(mcm.test.mtrg(1)-mcm.datat0); % starting time for migration, relative to data_t0 in second
-        time_end=seconds(mcm.test.mtrg(2)-mcm.datat0); % ending time for migration, relative to data_t0 in second
-        mcm.st0=time_start:mcm.dt0:time_end;
         
         % run mcm in the input time range
         migv=runmcm_matlab_test(trace,mcm,search);

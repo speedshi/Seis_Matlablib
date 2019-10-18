@@ -20,6 +20,7 @@ function show_mcmmigres(migv,search,trace,mcm,earthquake)
 % mcm: structure, contains parameters for mcm;
 % mcm.st0: vector, the searched origin times for mcm;
 % mcm.tpwind: time window in second for P-phase;
+% mcm.tdatal: time length of the whole seismic data in second (s);
 % earthquake: matlab structure, contains the location and origin time of
 % the earthquake, this input can have null input;
 % earthquake.north: scalar, earthquake location in north direction, in meter;
@@ -55,7 +56,7 @@ end
 idse=sub2ind([search.nsnr search.nser search.nsdr],xn,yn,zn); % location index for the MCM
 
 fprintf('Maximum coherence value: %f.\n',max(wfmstk_c(:))); % maximum coherency value in the volume
-fprintf('Origin time: %f s.\n',mcm.st0(tn)); % located event origin time 
+fprintf('Origin time: %f s.\n',mcm.st0(tn)); % located event origin time
 fprintf('Event location: %f, %f, %f m.\n',search.soup(idse,:)); % located event locations
 
 
@@ -69,7 +70,20 @@ nre=size(trace.data,1); % number of stations used in MCM
 % Display results, for MCM without origin tima calibration
 % display the arrival times of seismic event on the recorded seismic data
 et0=mcm.st0(tn); % the located origin time
-net0r=round((et0-lwin)/trace.dt+1):round((et0+rwin)/trace.dt+1); % origin time for the MCM
+
+% make sure the set time range is not out of boundary
+if lwin>et0
+    lwinc=et0;
+else
+    lwinc=lwin;
+end
+if rwin>mcm.tdatal-et0
+    rwinc=mcm.tdatal-et0;
+else
+    rwinc=rwin;
+end
+
+net0r=round((et0-lwinc)/trace.dt+1):round((et0+rwinc)/trace.dt+1); % origin time for the MCM
 exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
     figure; plot((net0r-1)*trace.dt,exwfm(:,ire),'k'); hold on;
@@ -86,10 +100,28 @@ title('Record section (MCM)');
 
 
 
-% Display results, for MCM with origin tima calibration
-tphase=0.45; % period of the seismic phase, in second
+% Display results, for MCM with origin time calibration
+if isfield(mcm,'pperiod')
+    tphase=mcm.pperiod;
+else
+    tphase=0.45; % default period of the seismic phase, in second
+end
+
 et0=mcm.st0(tn)+mcm.tpwind-tphase; % the calibrated origin time
-net0r=round((et0-lwin)/trace.dt+1):round((et0+rwin)/trace.dt+1); % origin time for the MCM
+
+% make sure the set time range is not out of boundary
+if lwin>et0
+    lwinc=et0;
+else
+    lwinc=lwin;
+end
+if rwin>mcm.tdatal-et0
+    rwinc=mcm.tdatal-et0;
+else
+    rwinc=rwin;
+end
+
+net0r=round((et0-lwinc)/trace.dt+1):round((et0+rwinc)/trace.dt+1); % origin time for the MCM
 exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
     figure; plot((net0r-1)*trace.dt,exwfm(:,ire),'k'); hold on;

@@ -37,6 +37,13 @@ mint=min(travelp); % find the minimal travel time
 maxt=max(travels); % find the maximal travel time
 
 nt1=round((stos+mint-10)/dt)+1; nt2=round((stos+maxt+30)/dt)+1; % obtain the suitable time range for plot the waveform data
+% check and make sure the range is not out of boundary
+if nt1<1
+    nt1=1;
+end
+if nt2>size(data,1)
+    nt2=size(data,1);
+end
 
 % plot the waveform section
 figure;
