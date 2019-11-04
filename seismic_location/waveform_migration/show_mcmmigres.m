@@ -19,6 +19,7 @@ function show_mcmmigres(migv,search,trace,mcm,earthquake)
 % trace.recp: assambled station positions, 2D array, n_sta*3, N-E-D in meters;
 % mcm: structure, contains parameters for mcm;
 % mcm.st0: vector, the searched origin times for mcm;
+% mcm.phasetp: specify seismic phase used for migration, scalar;
 % mcm.tpwind: time window in second for P-phase;
 % mcm.tdatal: time length of the whole seismic data in second (s);
 % earthquake: matlab structure, contains the location and origin time of
@@ -87,15 +88,40 @@ net0r=round((et0-lwinc)/trace.dt+1):round((et0+rwinc)/trace.dt+1); % origin time
 exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
     figure; plot((net0r-1)*trace.dt,exwfm(:,ire),'k'); hold on;
-    plot([trace.travelp(idse,ire)+et0   trace.travelp(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'b','linewidth',1.2); hold on;
-    plot([trace.travels(idse,ire)+et0   trace.travels(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'r','linewidth',1.2); hold on;
+    if mcm.phasetp==0 || mcm.phasetp==2
+        % plot P-phase arrival-times
+        %plot([trace.travelp(idse,ire)+et0   trace.travelp(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'b','linewidth',1.2); hold on;
+        ttmin=trace.travelp(idse,ire)+et0;
+        ttmax=ttmin+mcm.tpwind;
+        vmin=min(exwfm(:,ire));
+        vmax=max(exwfm(:,ire));
+        fill([ttmin ttmax ttmax ttmin],[vmin vmin vmax vmax],'b','linestyle','none','FaceAlpha',0.35); hold on;
+    end
+    if mcm.phasetp==1 || mcm.phasetp==2
+        % plot S-phase arrival-times
+        %plot([trace.travels(idse,ire)+et0   trace.travels(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'r','linewidth',1.2); hold on;
+        ttmin=trace.travels(idse,ire)+et0;
+        ttmax=ttmin+mcm.tswind;
+        vmin=min(exwfm(:,ire));
+        vmax=max(exwfm(:,ire));
+        fill([ttmin ttmax ttmax ttmin],[vmin vmin vmax vmax],'r','linestyle','none','FaceAlpha',0.35); hold on;
+    end
     xlabel('Time');ylabel('Amplitude');title('MCM');axis tight;
 end
 seisrsdisp(exwfm,trace.dt); % display the waveforms of different stations all together
 
 % record section for MCM, without origin time calibration
 soup_mcm=search.soup(idse,:)/1000;
-dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer
+if mcm.phasetp==0
+    % only P-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),[]); % note unit transfer
+elseif mcm.phasetp==1
+    % only S-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,[],trace.travels(idse,:)); % note unit transfer
+elseif mcm.phasetp==2
+    % both P- and S-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer
+end
 title('Record section (MCM)');
 
 
@@ -125,15 +151,40 @@ net0r=round((et0-lwinc)/trace.dt+1):round((et0+rwinc)/trace.dt+1); % origin time
 exwfm=transpose(trace.data(:,net0r)); % extracted waveforms
 for ire=1:nre
     figure; plot((net0r-1)*trace.dt,exwfm(:,ire),'k'); hold on;
-    plot([trace.travelp(idse,ire)+et0   trace.travelp(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'b','linewidth',1.2); hold on;
-    plot([trace.travels(idse,ire)+et0   trace.travels(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'r','linewidth',1.2); hold on;
+    if mcm.phasetp==0 || mcm.phasetp==2
+        % plot P-phase arrival-times
+        %plot([trace.travelp(idse,ire)+et0   trace.travelp(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'b','linewidth',1.2); hold on;
+        ttmin=trace.travelp(idse,ire)+et0;
+        ttmax=ttmin+mcm.tpwind;
+        vmin=min(exwfm(:,ire));
+        vmax=max(exwfm(:,ire));
+        fill([ttmin ttmax ttmax ttmin],[vmin vmin vmax vmax],'b','linestyle','none','FaceAlpha',0.35); hold on;
+    end
+    if mcm.phasetp==1 || mcm.phasetp==2
+        % plot S-phase arrival-times
+        %plot([trace.travels(idse,ire)+et0   trace.travels(idse,ire)+et0],[min(exwfm(:,ire)) max(exwfm(:,ire))],'r','linewidth',1.2); hold on;
+        ttmin=trace.travels(idse,ire)+et0;
+        ttmax=ttmin+mcm.tswind;
+        vmin=min(exwfm(:,ire));
+        vmax=max(exwfm(:,ire));
+        fill([ttmin ttmax ttmax ttmin],[vmin vmin vmax vmax],'r','linestyle','none','FaceAlpha',0.35); hold on;
+    end
     xlabel('Time');ylabel('Amplitude');title('MCM');axis tight;
 end
 seisrsdisp(exwfm,trace.dt); % display the waveforms of different stations all together
 
 % record section for MCM, with origin time calibration
 soup_mcm=search.soup(idse,:)/1000;
-dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer, m->km
+if mcm.phasetp==0
+    % only P-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),[]); % note unit transfer, m->km
+elseif mcm.phasetp==1
+    % only S-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,[],trace.travels(idse,:)); % note unit transfer, m->km
+elseif mcm.phasetp==2
+    % both P- and S-phase
+    dispwfscn(trace.data',trace.recp/1000,soup_mcm,trace.dt,et0,trace.travelp(idse,:),trace.travels(idse,:)); % note unit transfer, m->km
+end
 title('Record section (MCM with t0 calibrated)');
 
 
