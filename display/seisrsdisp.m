@@ -1,4 +1,4 @@
-function seisrsdisp(data,dt,name,t0)
+function fig=seisrsdisp(data,dt,name,t0)
 % This function is used to display the seismic sections;
 % Display as the record section format according different traces;
 % Maximum absolute value of each trace is linearly normalized to 1.
@@ -7,6 +7,10 @@ function seisrsdisp(data,dt,name,t0)
 % dt: time intveral for the recorded data, unit: s;
 % name: station code (name), cell array, shape: nre*1;
 % t0: datetime, origin time of the input seismic data;
+%
+% OUTPUT-------------------------------------------------------------------
+% fig: the figure handle;
+
 
 
 [nt,nrec]=size(data);
@@ -17,7 +21,7 @@ if nargin == 2
     t0=[];
 end
 
-figure;
+fig=figure;
 for ii=1:nrec
     drm=data(:,ii)-mean(data(:,ii)); % remove the mean values for each trace, i.e. remove the trend of each trace
     
