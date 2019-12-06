@@ -22,8 +22,14 @@ n=length(catalog.time); % number of earthquakes in the input catalog
 
 if ~isempty(para)
     if isfield(para,'rftime')
-        % use relative time
-        rtimes=days(catalog.time-para.rftime);
+        if strcmp(para.rftime,'toordinal')
+            % relative days count from the date AD 01/01/01, i.e.
+            % equivalent to python datetime.toordinal() function.
+            rtimes=datenum(catalog.time)-366;
+        else
+            % use days relative to a input datetime
+            rtimes=days(catalog.time-para.rftime);
+        end
     end
     
 end
