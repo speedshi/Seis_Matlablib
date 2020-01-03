@@ -58,7 +58,7 @@ snamelist{1}=stall.Station{1};
 % stations.name{1}=[snamelist{1} '.' Location];
 stations.name{1}=snamelist{1};
 
-if isfield(stall,'Latitude')
+if ismember('Latitude',stall.Properties.VariableNames)
     % Obtain geographic coordinates of the station
     stations.latitude(1)=stall.Latitude(1);
     stations.longitude(1)=stall.Longitude(1);
@@ -86,7 +86,7 @@ for ii=2:nnr
         %stations.name{nr}=[snamelist{nr} '.' Location];
         stations.name{nr}=snamelist{nr};
         
-        if isfield(stall,'Latitude')
+        if ismember('Latitude',stall.Properties.VariableNames)
             % Obtain the geographic information of the stations
             stations.latitude(nr)=stall.Latitude(ii);
             stations.longitude(nr)=stall.Longitude(ii);
@@ -105,7 +105,7 @@ end
 % Obtain Cartesian coordinates of the stations
 % Note, in order to use the same UTM zone to convert coordinate system, all
 % stations must be transfered together!
-if isfield(stall,'Latitude')
+if ismember('Latitude',stall.Properties.VariableNames)
     [stations.east,stations.north,stations.depth]=geod2cart(stations.latitude,stations.longitude,stations.elevation);
 end
 
@@ -118,7 +118,8 @@ if ~isempty(select)
     stations.east=stations.east(lindx);
     stations.north=stations.north(lindx);
     stations.depth=stations.depth(lindx);
-    if isfield(stall,'Latitude')
+    
+    if ismember('Latitude',stall.Properties.VariableNames)
         stations.latitude=stations.latitude(lindx);
         stations.longitude=stations.longitude(lindx);
         stations.elevation=stations.elevation(lindx);

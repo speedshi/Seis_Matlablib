@@ -48,7 +48,6 @@ nxwd=round(mcm.txwind/dt)+1; % time window in points for the seismic phase
 [nsr,nre]=size(trace.travelx); % obtain number of source imaging points and stations
 
 nst0=max(size(st0)); % number of searched origin time points
-
 migv=zeros(nsr,nst0); % initial migration volume
 
 parfor it=1:nst0
