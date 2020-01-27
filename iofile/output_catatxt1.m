@@ -19,6 +19,13 @@ if nargin < 2
     para.distance=false;
 end
 
+if ~isfield(para,'rftime')
+    para.rftime='toordinal';
+end
+
+if ~isfield(para,'distance')
+    para.distance=false;
+end
 
 n=length(catalog.time); % number of earthquakes in the input catalog
 
