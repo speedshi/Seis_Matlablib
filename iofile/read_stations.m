@@ -2,7 +2,7 @@ function stations=read_stations(fname,select)
 % This function is used to read the station file to obtain station
 % information such as the name and location.
 %
-% The depth parameter in the station file represent:
+% The Depth parameter in the IRIS station file represent:
 % The local depth or overburden of the instrument's location. For downhole
 % instruments, the depth of the instrument under the surface ground level.
 % For underground vaults, the distance from the instrument to the local
