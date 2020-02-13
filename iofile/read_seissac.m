@@ -1,8 +1,10 @@
 function seismic=read_seissac(file_seismic)
 % This function is used to read seismic data of SAC format.
 %
-% The seismic data of different traces should have the same length, the
-% same sampling rate and also start at the same time.
+% The seismic data of different traces must have the same sampling rate.
+% The different traces may start at the different times; however in this
+% situation, we will have to cut the traces to let them have the same
+% staring time and length.
 %
 % The input parameter 'file_seismic' can be a string or a cell array which
 % contains the names of all the SAC files.
@@ -31,18 +33,43 @@ end
 
 n_file=length(file); % the number of SAC files
 
+% check and obtain time and sampling information, keep consistent over all
+% traces
+[~,t0,header]=rdsac(file{1});
+seismic.fe=1.0/header.DELTA; % sampling frequency in Hz (the reciprocal of sampling interval)
+seismic.dt=header.DELTA; % time sample interval, in second
+time_1 = datetime(t0,'ConvertFrom','datenum');  % begin time
+time_2 = time_1 + seconds(header.DELTA*(header.NPTS-1));  % end time
+for ii = 2:n_file
+    [~,t0,header]=rdsac(file{ii});
+    if seismic.dt ~= header.DELTA
+        % the sampling interval should be the same
+        error('The sampling internal of different traces is different! Check input data!');
+    end
+    temp_1 = datetime(t0,'ConvertFrom','datenum');
+    temp_2 = temp_1 + seconds(header.DELTA*(header.NPTS-1));
+    
+    time_1 = max(time_1,temp_1);
+    time_2 = min(time_2,temp_2);
+    
+end
+
+
+seismic.t0 = time_1; % starting time of all the traces
+nt = round(seconds(time_2-time_1)*seismic.fe)+1; % number of time samples for each trace
+
+
 for ii=1:n_file
     % loop through all the files
-    [seismic.data(ii,:),t0,header]=rdsac(file{ii});
+    [data_temp,t0,header]=rdsac(file{ii});
     seismic.network{ii}=header.KNETWK; % network name of the array
-    seismic.component{ii}=header.KCMPNM; % component name of the data
+    %seismic.component{ii}=header.KCMPNM; % component name of the data
     seismic.name{ii}=header.KSTNM; % name of the station
+    temp = datetime(t0,'ConvertFrom','datenum');
     
-    if ii==1
-       seismic.fe=1.0/header.DELTA; % sampling frequency in Hz (the reciprocal of sampling interval)
-       seismic.dt=header.DELTA; % time sample interval, in second
-       seismic.t0=datetime(t0,'ConvertFrom','datenum'); % starting time of all the traces
-    end
+    id1 = round(seconds(seismic.t0-temp)*seismic.fe)+1;
+    id2 = id1 + nt - 1;
+    seismic.data(ii,:) = data_temp(id1:id2);
     
 end
 

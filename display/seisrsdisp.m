@@ -19,6 +19,8 @@ function fig=seisrsdisp(data,dt,name,t0)
 if nargin == 2
     name=1:nrec;
     t0=[];
+elseif nargin == 3
+    t0=[];
 end
 
 fig=figure;

@@ -9,6 +9,8 @@ function migv=runmcm_matlab_test(trace,mcm,search,earthquake)
 % trace.travelp: P-wave traveltime table, 2D array, nsr*nre;
 % trace.travels: S-wave traveltime table, 2D array, nsr*nre;
 % trace.recp: assambled station positions, 2D array, nre*3, N-E-D in meters;
+% trace.name: name of selected stations, vector, 1*n_sta;
+% trace.t0: matlab datetime, the starting time of traces;
 % mcm: matlab structure, contains MCM parameters;
 % mcm.phasetp: specify seismic phase used for migration, scalar;
 % mcm.tpwind: P-phase time window length in second, scalar;

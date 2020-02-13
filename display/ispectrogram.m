@@ -29,7 +29,7 @@ set(gca,'XTick',[]);
 axsize_1=get(h1,'Position'); % axis position of figure 1
 
 % show the spectrogram
-window=2; % time window of STFT, in second
+window=1; % time window of STFT, in second
 subplot(2,1,2);
 show_spectrogram(seismic.data(i,:),seismic.dt,window);
 title("Spectrogram of station: "+seismic.name{i});

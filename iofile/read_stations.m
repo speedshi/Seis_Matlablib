@@ -1,4 +1,4 @@
-function stations=read_stations(fname,select)
+function stations=read_stations(fname,select,utmstruct)
 % This function is used to read the station file to obtain station
 % information such as the name and location.
 %
@@ -27,6 +27,7 @@ function stations=read_stations(fname,select)
 % fname: file name including path of the station file;
 % select: structure, select stations that fullfill the requirements;
 % select.name: only select the named stations;
+% utmstruct: the UTM parameters for coordinate transfermation;
 %
 % OUTPUT----------------------------------------------
 % stations: structure, contains  metadata of each station;
@@ -37,6 +38,7 @@ function stations=read_stations(fname,select)
 % stations.latitude: vector, latitude in degree of each station;
 % stations.longitude: vector, longitude in degree of each station;
 % stations.elevation: vector, elevation in meter of each station;
+% stations.utmstruct: the UTM parameters for coordinate transfermation;
 
 
 if nargin < 2
@@ -106,7 +108,8 @@ end
 % Note, in order to use the same UTM zone to convert coordinate system, all
 % stations must be transfered together!
 if ismember('Latitude',stall.Properties.VariableNames)
-    [stations.east,stations.north,stations.depth]=geod2cart(stations.latitude,stations.longitude,stations.elevation);
+    [stations.east,stations.north,stations.depth,stations.utmstruct] = ...
+    geod2cart(stations.latitude,stations.longitude,stations.elevation,utmstruct);
 end
 
 

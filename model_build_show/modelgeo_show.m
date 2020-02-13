@@ -23,14 +23,30 @@ function search=modelgeo_show(file_stations,file_velocity,search,earthquake,sele
 % a figure that show the geometries.
 
 if nargin < 5
-   select=[]; 
+    select=[];
 end
 
 % obtain station information
-stations=read_stations(file_stations,select); % read in station information in IRIS text format
+if isstruct(file_stations)
+    % input is a structure array, contain everything about station
+    % information, no need to load from file
+    stations = file_stations;
+else
+    % input is the file name of station data, need to load information
+    % from file
+    stations=read_stations(file_stations,select); % read in station information in IRIS text format
+end
 
 % obtain model information
-model=read_velocity(file_velocity); % read in velocity model, now only accept homogeneous and layered model
+if isstruct(file_velocity)
+    % input is a structure array, contain everything about velocity
+    % model, no need to load from file
+    model = file_velocity;
+else
+    % input is the file name of velocity model, need to load
+    % information from file
+    model=read_velocity(file_velocity); % read in velocity model, now only accept homogeneous and layered model
+end
 lydp=callyifdp(model.thickness,model.rsd0); % obtain depth of each layer interface
 
 
@@ -59,7 +75,7 @@ if nargin == 2
     
     earthquake=[];
     
-elseif nargin == 3    
+elseif nargin == 3
     earthquake=[];
     
 end

@@ -14,9 +14,18 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 %
 % INPUT--------------------------------------------------------------------
 % file: matlab structure, contains the file names of the input data;
-% file.seismic: file name (including path) of the seismic data, a string or cell array;
-% file.stations: file name (including path) of the stations, a string;
-% file.velocity: file name (including path) of the velocity model, a string;
+% file.seismic: file name (including path) of the seismic data, a string or
+%               cell array; Or if file.seismic is a structure array, then it
+%               contains all needed information about seismic data, no need
+%               to load from file.
+% file.stations: file name (including path) of the stations, a string; Or
+%                if file.stations is a structure array, then it contains
+%                all needed information about seismic stations, no need to
+%                load from file.
+% file.velocity: file name (including path) of the velocity model, a
+%                string; Or if file.velocity is a structure array, then it
+%                contains all needed information about velocity model, no
+%                need to load from file.
 % search: matlab structure, contains the imaging area information;
 % search.north: 1*2, imaging area in the north direction, in meter,
 % search.east: 1*2, imaging area in the east direction, in meter,
@@ -29,6 +38,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % mcm.filter.freq: frequency band used to filter the seismic data, a vector containing 1 or 2 elements, in Hz
 % mcm.filter.type: filter type, can be 'low', 'bandpass', 'high', 'stop'
 % mcm.filter.order: order of Butterworth filter, for bandpass and bandstop designs are of order 2n
+% mcm.utmstruct: struture, the UTM parameter for coordinate transfermation;
 % precision: 'single' or 'double', specify the precision of the output
 % binary files.
 %
@@ -81,6 +91,10 @@ if ~isfield(mcm,'workfolder')
     mcm.workfolder='mcm';
 end
 
+% set utmstruct
+if ~isfield(mcm,'utmstruct')
+    mcm.utmstruct = [];
+end
 
 
 % check if the working directory exists, if not, then create it
@@ -99,7 +113,15 @@ if ~exist(folder,'dir')
 end
 
 % read the seismic data
-seismic=read_seis(file.seismic);
+if isstruct(file.seismic)
+    % input is a structure array, contain everything about seismic data, no
+    % need to load from file
+    seismic = file.seismic;
+else
+    % input is the file name of seismic data, need to load information from
+    % file
+    seismic=read_seis(file.seismic);
+end
 
 % check if need to reset the t0 of the seismic data
 if isfield(mcm,'datat0')
@@ -118,10 +140,27 @@ if isfield(mcm,'prefile') && ~isempty(mcm.prefile)
 else
     % need to calculate traveltime tables
     % read in station information
-    stations=read_stations(file.stations); % read in station information in IRIS text format
+    if isstruct(file.stations)
+        % input is a structure array, contain everything about station
+        % information, no need to load from file
+        stations = file.stations;
+    else
+        % input is the file name of station data, need to load information
+        % from file
+        stations=read_stations(file.stations,[],mcm.utmstruct); % read in station information in IRIS text format
+        mcm.utmstruct = stations.utmstruct; % reset the utmstruct, since this is the first point to transform coordinates
+    end
     
     % read in velocity infomation
-    model=read_velocity(file.velocity); % read in velocity model, now only accept homogeneous and layered model
+    if isstruct(file.velocity)
+        % input is a structure array, contain everything about velocity
+        % model, no need to load from file
+        model = file.velocity;
+    else
+        % input is the file name of velocity model, need to load
+        % information from file
+        model=read_velocity(file.velocity); % read in velocity model, now only accept homogeneous and layered model
+    end
     
     % obtain MCM required input files
     % generate binary file of source imaging positions
@@ -212,7 +251,7 @@ switch mcm.run
                 error('Incorrect input for mcm.test.mtrg! Not applicable.');
             end
             
-            % obtain the searching origin time serials            
+            % obtain the searching origin time serials
             time_start=seconds(mcm.test.mtrg(1)-mcm.datat0); % starting time for migration, relative to data_t0 in second
             time_end=seconds(mcm.test.mtrg(2)-mcm.datat0); % ending time for migration, relative to data_t0 in second
             mcm.st0=time_start:mcm.dt0:time_end;
