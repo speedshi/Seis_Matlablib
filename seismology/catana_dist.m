@@ -36,7 +36,7 @@ end
 % calculate the distances between the events and the input earthquake
 dist=sqrt((catalog.east-east).^2+(catalog.north-north).^2)/1000; % note the unit is now in km
 
-sz=dnormlz(catalog.magnitude,6,20); % magnitude of events control the relative sizes of the ploted dots
+sz=dnormlz(catalog.magnitude,5,20); % magnitude of events control the relative sizes of the ploted dots
 
 % plot the distances
 if para.newfig

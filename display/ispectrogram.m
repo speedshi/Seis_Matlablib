@@ -18,6 +18,8 @@ if nargin <2
    i=1;
 end
 
+i=round(i);
+
 figure;
 
 % show the seismogram

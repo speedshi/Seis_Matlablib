@@ -43,6 +43,9 @@ function stations=read_stations(fname,select,utmstruct)
 
 if nargin < 2
     select=[];
+    utmstruct=[];
+elseif nargin < 3
+    utmstruct=[];
 end
 
 opts=detectImportOptions(fname);

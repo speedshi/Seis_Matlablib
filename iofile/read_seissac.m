@@ -2,9 +2,9 @@ function seismic=read_seissac(file_seismic)
 % This function is used to read seismic data of SAC format.
 %
 % The seismic data of different traces must have the same sampling rate.
-% The different traces may start at the different times; however in this
-% situation, we will have to cut the traces to let them have the same
-% staring time and length.
+% The different traces may have different starting times and length;
+% however in this situation, we will have to cut the traces to let them
+% have the same staring time and length.
 %
 % The input parameter 'file_seismic' can be a string or a cell array which
 % contains the names of all the SAC files.
@@ -63,7 +63,7 @@ for ii=1:n_file
     % loop through all the files
     [data_temp,t0,header]=rdsac(file{ii});
     seismic.network{ii}=header.KNETWK; % network name of the array
-    %seismic.component{ii}=header.KCMPNM; % component name of the data
+    seismic.component{ii}=header.KCMPNM; % component name of the data
     seismic.name{ii}=header.KSTNM; % name of the station
     temp = datetime(t0,'ConvertFrom','datenum');
     
