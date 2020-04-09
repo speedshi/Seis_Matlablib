@@ -1,5 +1,5 @@
 function [tvt,tkfa,rayl]=tvtcalrt_ly(vel,thk,soup,recp)
-% This function is used to calculate the travel-times, take-off angles and 
+% This function is used to calculate the travel-times, take-off angles and
 % ray-length in layered isotropic media using ray tracing. The source is placed
 % at target layer, receiver is placed at the free surface or near free
 % surface. The receiver position locate above the source position.
@@ -52,20 +52,28 @@ if nly>1
     end
 end
 
+recp_x = recp(:,1);  % X-coordinates of stations
+recp_y = recp(:,2);  % Y-coordinates of stations
+recp_z = recp(:,3);  % Z-coordinates of stations
+
+soup_x = soup(:,1);  % X-coordinates of sources
+soup_y = soup(:,2);  % Y-coordinates of sources
+soup_z = soup(:,3);  % Z-coordinates of sources
+
 % calculate travle-time, take-off angle and ray length for source-reciever pair
-for ir=1:nre
+parfor ir=1:nre
     for is=1:nsr
         % calculate the offset of the source-receiver pairs
-        srx=recp(ir,1)-soup(is,1); % source-receiver distance in X direction
-        sry=recp(ir,2)-soup(is,2); % source-receiver distance in Y direction
-        srz=recp(ir,3)-soup(is,3); % source-receiver distance in Z direction
+        srx=recp_x(ir)-soup_x(is); % source-receiver distance in X direction
+        sry=recp_y(ir)-soup_y(is); % source-receiver distance in Y direction
+        srz=recp_z(ir)-soup_z(is); % source-receiver distance in Z direction
         sroff=sqrt(srx*srx+sry*sry); % source-receiver offset - horizontal diatance (km)
         
         % Calculate which layer the source and receiver belong to
         % Each layer include the bottom interface
         nls=0; nlr=0; % initialization
         for il=1:nly
-            if soup(is,3)<=lydp(il)
+            if soup_z(is)<=lydp(il)
                 nls=il; % source layer
                 break
             end
@@ -74,7 +82,7 @@ for ir=1:nre
             error('Wrong source depth at source %d! Exceeding input model depth range!',is);
         end
         for il=1:nly
-            if recp(ir,3)<=lydp(il)
+            if recp_z(ir)<=lydp(il)
                 nlr=il; % receiver layer
                 break
             end
@@ -97,14 +105,14 @@ for ir=1:nre
                 tkfa2=asind(vel(nls)/vms);
             end
             offrd=1; % residual of the calculated source-receiver offset
-            szrd=soup(is,3)-lydp(nls-1); % vertical distance in source layer
+            szrd=soup_z(is)-lydp(nls-1); % vertical distance in source layer
             fthk=thk;
-            fthk(nlr)=lydp(nlr)-recp(ir,3); % vertical distance in reciever layer
+            fthk(nlr)=lydp(nlr)-recp_z(ir); % vertical distance in reciever layer
             while (offrd>toler)
                 tkfat=(tkfa1+tkfa2)/2;
                 offtst=szrd*tand(tkfat); % temporary source-receiver offset
                 ryltst=sqrt(offtst*offtst+szrd*szrd); % temporary ray-length
-                tvttst=ryltst/vel(nls); % temporary travel-time                
+                tvttst=ryltst/vel(nls); % temporary travel-time
                 hrp=sind(tkfat)/vel(nls); % horizontal slowness in layered media (s/km)
                 for im=nls-1:-1:nlr
                     mcoff=fthk(im)*tand(asind(vel(im)*hrp));
@@ -119,7 +127,7 @@ for ir=1:nre
                 else
                     tkfa1=tkfat; % lower boundary
                 end
-                offrd=abs(sroff-offtst); % calculate the offset residual  
+                offrd=abs(sroff-offtst); % calculate the offset residual
             end
             tvt(is,ir)=tvttst;
             tkfa(is,ir)=tkfat;

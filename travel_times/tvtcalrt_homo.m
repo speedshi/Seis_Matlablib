@@ -32,13 +32,21 @@ tvts=zeros(nsr,nre);
 tkfa=zeros(nsr,nre);
 rayl=zeros(nsr,nre);
 
+recp_x = recp(:,1);  % X-coordinates of stations
+recp_y = recp(:,2);  % Y-coordinates of stations
+recp_z = recp(:,3);  % Z-coordinates of stations
+
+soup_x = soup(:,1);  % X-coordinates of sources
+soup_y = soup(:,2);  % Y-coordinates of sources
+soup_z = soup(:,3);  % Z-coordinates of sources
+
 % calculate the ray-length of the source-receiver pairs and travel-times
-for ir=1:nre
+parfor ir=1:nre
     for is=1:nsr
         % calculate the source-receiver offset
-        srx=recp(ir,1)-soup(is,1); % source-receiver distance in X direction (km)
-        sry=recp(ir,2)-soup(is,2); % source-receiver distance in Y direction (km)
-        srz=recp(ir,3)-soup(is,3); % source-receiver distance in Z direction (km)
+        srx=recp_x(ir)-soup_x(is); % source-receiver distance in X direction (km)
+        sry=recp_y(ir)-soup_y(is); % source-receiver distance in Y direction (km)
+        srz=recp_z(ir)-soup_z(is); % source-receiver distance in Z direction (km)
         sroff=sqrt(srx*srx+sry*sry); % horizontal distance of source-receiver (km)
         srdist=sqrt(srx*srx+sry*sry+srz*srz); % source-receiver distance (km)        
         tvtp(is,ir)=srdist/vp; % travel-time of direct P-wave

@@ -18,7 +18,7 @@ if nargin <2
    i=1;
 end
 
-i=round(i);
+i=round(i);  % index should be an integer
 
 figure;
 

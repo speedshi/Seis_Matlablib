@@ -10,7 +10,7 @@ function show_spectrogram(data,dt,window)
 
 fs=1/dt; % sampling frequency in Hz
 
-window=window/dt; % window of STFT in points
+window=round(window/dt); % window of STFT in points
 
 spectrogram(data,window,[],[],fs,'yaxis');
 colormap(jet);
