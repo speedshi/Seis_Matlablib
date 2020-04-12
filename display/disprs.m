@@ -2,9 +2,8 @@ function [ofsda,ofsd]=disprs(data,recp,soup,dt,pap,dpre,stos,travelp,travels)
 % This function is used to plot the record section according to the
 % horizontal offsets between the event and stations.
 % Input:----------------------------------------------------
-% data: the waveform data recorded at different satations, first dimension:
-% time; second dimension: satation.
-% recp: the position of different stations, Nre*3, first dimension: station;
+% data: the waveform data recorded at different satations, shape: Nt*nre.
+% recp: the position of different stations, shape: nre*3;
 % second dimension: position (column 1-3: X-Y-Z), in km.
 % soup: the position of a particular event, 1*3, column 1-3: X-Y-Z, in km.
 % dt: time sampling interval of the recorded data, in second.
@@ -47,6 +46,8 @@ end
 
 [Nt,nre]=size(data); % obtain the number of time points and stations
 
+soup = soup(:)'; % make sure shape is of input source postion is correct: 1*3;
+
 % calculate the distances between the event and stations
 offseto=sqrt(sum(bsxfun(@minus,recp(:,1:2),soup(1,1:2)).^2,2));
 offset=round(offseto,dpre); % set the precision of the source-receiver offsets,
@@ -87,7 +88,11 @@ for ire=1:length(ofsd)
         plot((travels(idf(ire))+stos),dext(round((travels(idf(ire))+stos)/dt)+2-nt1),'r.','linewidth',1.2); hold on; % mark the calculated S-wave arrival time
     end
 end
-plot((travelp(idf)+stos),ofsda,'-b','linewidth',1.2); hold on; % mark the calculated P-wave arrival time - line
-plot((travels(idf)+stos),ofsda,'-r','linewidth',1.2); hold on; % mark the calculated S-wave arrival time - line
+if iflagp==1
+    plot((travelp(idf)+stos),ofsda,'-b','linewidth',1.2); hold on; % mark the calculated P-wave arrival time - line
+end
+if iflags==1
+    plot((travels(idf)+stos),ofsda,'-r','linewidth',1.2); hold on; % mark the calculated S-wave arrival time - line
+end
 axis tight; set(gca,'ytick',ofsda,'yticklabel',num2str(ofsd)); % display the correct distance label
 xlabel('Time (s)'); ylabel('Offset (km)');

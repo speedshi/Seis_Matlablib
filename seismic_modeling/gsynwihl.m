@@ -22,7 +22,9 @@ end
 [dt,nt,ns,source]=rdsourcef(sname);
 
 % read the receiver file
-[nr,recp]=rdreceiverf(rname);
+stations=rdreceiverf(rname);
+nr=stations.nr; % number of stations
+recp=stations.recp; % positions of stations, X-Y-Z
 
 % read the velocity model file
 [nl,rsd0,model]=rdmodelf(mname);

@@ -19,7 +19,8 @@ for ids=1:ns
 end
 
 % read the receiver file
-[~,recp]=rdreceiverf(rname);
+stations=rdreceiverf(rname);
+recp=stations.recp; % positions of stations, X-Y-Z
 
 % read the velocity model file
 [nl,rsd0,model]=rdmodelf(mname);
@@ -52,6 +53,7 @@ yc=[ymin-yyc ymax+yyc];
 zzc=0.05*(zmax-zmin);
 zc=[zmin zmax+zzc];
 
-plotgeo(xc,yc,zc,lydp,recp(:,1),recp(:,2),recp(:,3),[],[],[],soup,16,10,8);
+para.sname = stations.name;
+plotgeo(xc,yc,zc,lydp,recp(:,1),recp(:,2),recp(:,3),[],[],[],soup,16,10,8,para);
 
 end

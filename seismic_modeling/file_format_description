@@ -4,7 +4,7 @@ Right-hand coordinate systerm in Cartesian coordinate. X: North; Y: East; Z: ver
 (1) source file
 0.001                        | float. Time sampling interval of the modeling and source time function, second.
 4000                         | integer. Number of time samples of the modeling and source time funciont.
-1                            | integer. Number of sources
+2                            | integer. Number of sources
 2500      2500      1050     | float-float-float. X-Y-Z positions of the source 1, meter.
 1                            | integer. Type of source time function. 0: input from file; 1: Ricker wavelet; -1: impulse (calculate the Green's function, the next line is not important in this situation).
 40                           | characters or float. If source time function is input from file, this line shows the file name. If source time function is theoretical wavelet, this line shows the dominant frequency, Hz.
@@ -19,9 +19,9 @@ Right-hand coordinate systerm in Cartesian coordinate. X: North; Y: East; Z: ver
 
 (2) receiver file
 27                           | integer. Number of receivers
-800      800      800        | float-float-float. X-Y-Z positions of the receiver 1, meter.
-800      800      0          | float-float-float. X-Y-Z positions of the receiver 2, meter.
-800      800     -800        | float-float-float. X-Y-Z positions of the receiver 3, meter.
+s1    800    800    800      | string-float-float-float. name-X-Y-Z positions of the receiver 1, meter.
+s2    800    800    0        | string-float-float-float. name-X-Y-Z positions of the receiver 2, meter.
+s3    800    800   -800      | string-float-float-float. name-X-Y-Z positions of the receiver 3, meter.
 ...
 ...
 ...
