@@ -26,6 +26,7 @@ function event = show_mcmmigres(migv,search,trace,mcm,earthquake)
 % mcm.tpwind: time window in second for P-phase;
 % mcm.tdatal: time length of the whole seismic data in second (s);
 % mcm.utmstruct: struture, the UTM parameter for coordinate transfermation;
+% mcm.pperiod: estimated period of the seismic phase, in second;
 % earthquake: matlab structure, contains the location and origin time of
 % the earthquake, this input can have null input;
 % earthquake.north: scalar, earthquake location in north direction, in meter;
@@ -68,13 +69,16 @@ idse=sub2ind([search.nsnr search.nser search.nsdr],xn,yn,zn); % location index f
 event.t0 = trace.t0 + seconds(mcm.st0(tn));  % origin time of the located seismic event (datatime format)
 time_str = datestr(event.t0,'yyyy-mm-dd HH:MM:SS.FFF');
 
-[event.latitude,event.longitude]=minvtran(mcm.utmstruct,search.soup(idse,2),search.soup(idse,1)); % transfer Cartesian (m) to Geodetic coordinate (degree)
-event.depth = search.soup(idse,3);
 
+% print the location results
 fprintf('Maximum coherence value: %f.\n',max(wfmstk_c(:))); % maximum coherency value in the volume
 fprintf('Origin time: %s.\n',time_str); % origin time of the located event
 fprintf('Event location: X-%f, Y-%f, Z-%f m.\n',search.soup(idse,:)); % located event locations
-fprintf('Latitude: %f; Longitude: %f; Depth: %f m.\n',event.latitude,event.longitude,event.depth); % located event locations
+if ~isempty(mcm.utmstruct)
+    [event.latitude,event.longitude]=minvtran(mcm.utmstruct,search.soup(idse,2),search.soup(idse,1)); % transfer Cartesian (m) to Geodetic coordinate (degree)
+    event.depth = search.soup(idse,3);
+    fprintf('Latitude: %f; Longitude: %f; Depth: %f m.\n',event.latitude,event.longitude,event.depth); % located event locations
+end
 
 
 lwin=30; % left window length for showing seismic data, in second
@@ -213,8 +217,21 @@ if ~isempty(earthquake)
     
     % display the arrival times of seismic event on the recorded seismic data
     et0ca=earthquake.t0;
-    net0r=round((et0ca-lwin)/trace.dt+1):round((et0ca+rwin)/trace.dt+1); % origin time for the catalogue
-    exwfm_t0 = trace.t0 + seconds(et0-lwinc); % t0 time of the extracted data, in datetime format (absolute times)
+    
+    % make sure the set time range is not out of boundary
+    if lwin>et0ca
+        lwinc=et0ca;
+    else
+        lwinc=lwin;
+    end
+    if rwin>mcm.tdatal-et0ca
+        rwinc=mcm.tdatal-et0ca;
+    else
+        rwinc=rwin;
+    end
+
+    net0r=round((et0ca-lwinc)/trace.dt+1):round((et0ca+rwinc)/trace.dt+1); % origin time for the catalogue
+    exwfm_t0 = trace.t0 + seconds(et0ca-lwinc); % t0 time of the extracted data, in datetime format (absolute times)
     exwfmca=transpose(trace.data(:,net0r)); % extracted waveforms
     for ire=1:nre
         figure; plot((net0r-1)*trace.dt,exwfmca(:,ire),'k'); hold on;

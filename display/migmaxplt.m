@@ -6,6 +6,7 @@ function [tn,xn,yn,zn]=migmaxplt(data,soup,tarxr,taryr,tarzr,taxis)
 % values along the time dimension.
 % The position of the maximum data in the 4D data represents the original
 % time and X-Y-Z positions of the source.
+% X-North; Y-East; Z-Depth;
 % Input:----------------------------------------------------
 % data: input 4D migration data. Dimension 1: time; Dimension 2: X;
 % Dimension 3: Y; Dimension 4: Z;
@@ -32,7 +33,7 @@ end
 
 
 % define source location
-[~,nxr,nyr,nzr]=size(data);
+[nt0,nxr,nyr,nzr]=size(data);
 xxr=linspace(tarxr(1),tarxr(2),nxr);
 yyr=linspace(taryr(1),taryr(2),nyr);
 zzr=linspace(tarzr(1),tarzr(2),nzr);
@@ -54,34 +55,40 @@ load mycolor1.mat;
 
 % Plot the three profiles along the maximum migration value in the volume
 % plot the X profile
-pdis=squeeze(data(tn,xn,:,:))'; % extract the X profile
-xx=[taryr(1) taryr(2)];yy=[tarzr(1) tarzr(2)]; % horizontal and vertical range
-figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
-plot(soup(2),soup(3),'kh'); hold on; %caxis([0 1]);
-axis equal; axis tight; xlabel('Y (km)'); ylabel('Z (km)');
-figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+pdis=reshape(data(tn,xn,:,:),nyr,nzr)'; % extract the X profile
+if ~isvector(pdis)
+    xx=[taryr(1) taryr(2)];yy=[tarzr(1) tarzr(2)]; % horizontal and vertical range
+    figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
+    plot(soup(2),soup(3),'kh'); hold on; %caxis([0 1]);
+    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)');
+    figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+end
 
 % plot the Y profile
-pdis=squeeze(data(tn,:,yn,:))'; % extract the Y profile
-xx=[tarxr(1) tarxr(2)];yy=[tarzr(1) tarzr(2)]; % horizontal and vertical range
-figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
-plot(soup(1),soup(3),'kh'); hold on; %caxis([0 1]);
-axis equal; axis tight; xlabel('X (km)'); ylabel('Z (km)');
-figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+pdis=reshape(data(tn,:,yn,:),nxr,nzr)'; % extract the Y profile
+if ~isvector(pdis)
+    xx=[tarxr(1) tarxr(2)];yy=[tarzr(1) tarzr(2)]; % horizontal and vertical range
+    figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
+    plot(soup(1),soup(3),'kh'); hold on; %caxis([0 1]);
+    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)');
+    figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+end
 
 % plot the Z profile
-pdis=squeeze(data(tn,:,:,zn));
-xx=[taryr(1) taryr(2)];yy=[tarxr(1) tarxr(2)]; % horizontal and vertical range
-figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
-plot(soup(2),soup(1),'kh'); hold on; %caxis([0 1]);
-axis equal; axis tight; axis xy; xlabel('Y (km)'); ylabel('X (km)');
-figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+pdis=reshape(data(tn,:,:,zn),nxr,nyr);
+if ~isvector(pdis)
+    xx=[taryr(1) taryr(2)];yy=[tarxr(1) tarxr(2)]; % horizontal and vertical range
+    figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
+    plot(soup(2),soup(1),'kh'); hold on; %caxis([0 1]);
+    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)');
+    figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+end
 
 % Plot the stacking function at the located source position
 figure;
@@ -101,35 +108,41 @@ axis tight;
 % dimension.
 % projection on Y-Z profile
 xx=[taryr(1) taryr(2)];yy=[tarzr(1) tarzr(2)];
-imagz=squeeze(max(data,[],1)); % find the maximum value in Time domain
-pdis=squeeze(max(imagz,[],1))'; % find the maximum value in X domain
-figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
-plot(soup(2),soup(3),'kh'); hold on;
-axis equal; axis tight; xlabel('Y (km)'); ylabel('Z (km)');
-figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+imagz=reshape(max(data,[],1),nxr,nyr,nzr); % find the maximum value in Time domain
+pdis=reshape(max(imagz,[],1),nyr,nzr)'; % find the maximum value in X domain
+if ~isvector(pdis)
+    figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
+    plot(soup(2),soup(3),'kh'); hold on;
+    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)');
+    figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+end
 
 % projection on X-Z profile
 xx=[tarxr(1) tarxr(2)];yy=[tarzr(1) tarzr(2)];
-imagz=squeeze(max(data,[],1)); % find the maximum value in Time domain
-pdis=squeeze(max(imagz,[],2))'; % find the maximum value in Y domain
-figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
-plot(soup(1),soup(3),'kh'); hold on;
-axis equal; axis tight; xlabel('X (km)'); ylabel('Z (km)');
-figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+imagz=reshape(max(data,[],1),nxr,nyr,nzr); % find the maximum value in Time domain
+pdis=reshape(max(imagz,[],2),nxr,nzr)'; % find the maximum value in Y domain
+if ~isvector(pdis)
+    figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
+    plot(soup(1),soup(3),'kh'); hold on;
+    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)');
+    figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+end
 
 % projection on X-Y profile
 xx=[taryr(1) taryr(2)];yy=[tarxr(1) tarxr(2)];
-imagz=squeeze(max(data,[],1)); % find the maximum value in Time domain
-pdis=squeeze(max(imagz,[],3)); % find the maximum value in Z domain
-figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
-plot(soup(2),soup(1),'kh'); hold on;
-axis equal; axis tight; axis xy; xlabel('Y (km)'); ylabel('X (km)');
-figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
-plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
-axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+imagz=reshape(max(data,[],1),nxr,nyr,nzr); % find the maximum value in Time domain
+pdis=reshape(max(imagz,[],3),nxr,nyr); % find the maximum value in Z domain
+if ~isvector(pdis)
+    figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
+    plot(soup(2),soup(1),'kh'); hold on;
+    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)');
+    figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
+    plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',5,'MarkerFaceColor','k'); hold on;
+    axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+end
 
 end

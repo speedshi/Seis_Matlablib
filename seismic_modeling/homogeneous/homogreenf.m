@@ -87,10 +87,10 @@ for ire=1:Nre
     end
     
     % calculate the time-dependent term
-    tap=rd/vp; % P-wave arrival-time (s)
-    tas=rd/vs; % S-wave arrival-time (s)
-    ntp=round((t0+tap)/dt)+1; % time points for P-wave, ntp=1 means time 0.
-    nts=round((t0+tas)/dt)+1; % time points for S-wave
+    tap=rd/vp; % P-wave traveltime (s)
+    tas=rd/vs; % S-wave traveltime (s)
+    ntp=round((t0+tap)/dt)+1; % arrival-time points for P-wave, ntp=1 means time 0.
+    nts=round((t0+tas)/dt)+1; % arrival-time points for S-wave
     
     % for near-field term
     for itt=ntp:nts

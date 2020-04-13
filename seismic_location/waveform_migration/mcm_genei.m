@@ -39,6 +39,11 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % mcm.filter.type: filter type, can be 'low', 'bandpass', 'high', 'stop'
 % mcm.filter.order: order of Butterworth filter, for bandpass and bandstop designs are of order 2n
 % mcm.utmstruct: struture, the UTM parameter for coordinate transfermation;
+% mcm.earthquake: structure, the input earthquake location for comparision;
+% mcm.earthquake.east: east coordinate in meter;
+% mcm.earthquake.north: north coordinate in meter;
+% mcm.earthquake.depth: depth coordinate in meter;
+% mcm.earthquake.t0: origin time relative to the starting time of seismic data, in second;
 % precision: 'single' or 'double', specify the precision of the output
 % binary files.
 %
@@ -144,6 +149,11 @@ else
         % input is a structure array, contain everything about station
         % information, no need to load from file
         stations = file.stations;
+        if ~isfield(stations,'utmstruct')
+            mcm.utmstruct = [];
+        else
+            mcm.utmstruct = stations.utmstruct;
+        end
     else
         % input is the file name of station data, need to load information
         % from file
@@ -260,8 +270,15 @@ switch mcm.run
             mcm=detmst0(mcm,trace);
         end
         
+        % check if there is input earthquake information
+        if isfield(mcm,'earthquake')
+            earthquake = mcm.earthquake;
+        else
+            earthquake = [];
+        end
+        
         % run mcm in the input time range
-        migv=runmcm_matlab_test(trace,mcm,search);
+        migv=runmcm_matlab_test(trace,mcm,search,earthquake);
         
     case 4
         fprintf('Run MCM Matlab program.\n');

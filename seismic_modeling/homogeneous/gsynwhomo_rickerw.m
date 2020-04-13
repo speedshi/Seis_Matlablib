@@ -1,15 +1,16 @@
-function [fdata1,fdata2,fdata3]=gsynwhomo_rickerw(vp,vs,den,recp,soup,mt,dt,Nt,freq)
+function [fdata1,fdata2,fdata3]=gsynwhomo_rickerw(vp,vs,den,recp,soup,mt,dt,Nt,freq,t0)
 % This function is used to generate the synthetic seismic data at a receiver point using Green's funciton.
 % All parameters use SI unit, i.e. meter-kg-second.
 % The wavelet is set default as analytical Ricker wavelet.
-% Note: for Ricker wavelet, default time delay is 1.1/f, should keep consistent.
+% Note: for Ricker wavelet, the time delay is (1.1/f+t0), should keep
+% consistent with "rickerw.m".
 % All the calculation related about wavelet is performed using analytical Ricker wavelet equation.
 % We have to specify the source point and the receiver point.
 % Coordinate: 1-X  2-Y  3-Z
 % theta: zenith angle measured form the positive Z-axis, [0, pi]
 % phi: azimuth angle measured counterclockwise form the positive X-axis, [0, 2pi)
 % theta & phi is used to construct direction cosines of source-receiver vector
-% Input parameters: ---------------------------------------------------
+% Input parameters: -------------------------------------------------------
 % Elastic porperty of the medium:
 % vp: P-wave velocity (m/s)
 % vs: S-wave velocity (m/s)
@@ -22,11 +23,16 @@ function [fdata1,fdata2,fdata3]=gsynwhomo_rickerw(vp,vs,den,recp,soup,mt,dt,Nt,f
 % dt: time interval
 % Nt: number of time samples
 % freq: main frequency of the wavelet
-% Output parameters: ------------------------------------------------
+% t0: origin time or delayed time of the wavelet (source time function), in second.
+% Output parameters: ------------------------------------------------------
 % (dimension: Nt*Nre)
 % fdata1: displacement in X direction, unit: meter
 % fdata2: displacement in Y direction, unit: meter
 % fdata3: displacement in Z direction, unit: meter
+
+if nargin<10
+   t0=0; % default origin time is 0 
+end
 
 Nre=size(recp,1);
 piden=4*pi*den;
@@ -87,24 +93,24 @@ for ire=1:Nre
         end
     end    
         
-    tap=rd/vp; % P-wave arrival-time (s)
-    tas=rd/vs; % S-wave arrival-time (s)
+    tap=rd/vp; % P-wave traveltime (s)
+    tas=rd/vs; % S-wave traveltime (s)
     
     % calculate time-dependent term
     % for near-field
     stfn=zeros(Nt,1);
     for int=1:Nt
         ingt=dt*(int-1); % time for integration
-        stfn(int)=calnint(ingt,freq,tap,tas);
+        stfn(int)=calnint(ingt,freq,tap,tas,t0);
     end
     % for intermediate-field P-wave
-    stfip=rickerw(freq,dt,Nt,tap);
+    stfip=rickerw(freq,dt,Nt,tap+t0);
     % for intermediate-field S-wave
-    stfis=rickerw(freq,dt,Nt,tas);
+    stfis=rickerw(freq,dt,Nt,tas+t0);
     % for far-field P-wave
-    stffp=rickerwd(freq,dt,Nt,tap);
+    stffp=rickerwd(freq,dt,Nt,tap+t0);
     % for far-field S-wave
-    stffs=rickerwd(freq,dt,Nt,tas);
+    stffs=rickerwd(freq,dt,Nt,tas+t0);
     
     % displacement field in the near-field
     fnc1=anc1*stfn/(piden*rd^4);

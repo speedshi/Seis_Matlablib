@@ -21,11 +21,16 @@ function [fdata1,fdata2,fdata3]=gsynwhomo(vp,vs,den,recp,soup,mt,dt,Nt,stf)
 % dt: time interval, in second.
 % Nt: number of time samples.
 % stf: source time function, Nt*1.
+% t0: origin time or delayed time of the wavelet, in second.
 % Output parameters: ------------------------------------------------
 % (dimension: Nt*Nre)
 % fdata1: displacement in X direction, unit: meter
 % fdata2: displacement in Y direction, unit: meter
 % fdata3: displacement in Z direction, unit: meter
+
+% if nargin<10
+%     t0=0; % default origin time is 0 
+% end
 
 Nre=size(recp,1);
 piden=4*pi*den;
@@ -99,8 +104,8 @@ for ire=1:Nre
         end
     end
     
-    tap=rd/vp; % P-wave arrival-time (s)
-    tas=rd/vs; % S-wave arrival-time (s)
+    tap=rd/vp; % P-wave traveltime (s)
+    tas=rd/vs; % S-wave traveltime (s)
     
     % calculate time-dependent term
     % for near-field

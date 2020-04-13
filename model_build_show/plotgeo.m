@@ -6,9 +6,10 @@ function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup,rmksize,smksi
 % xc: boundry of X axis of the model (m), vector (2*1), can be void vector;
 % yc: boundry of Y axis of the model (m), vector (2*1), can be void vector;
 % zc: boundry of Z axis of the model (m), vector (2*1), can be void vector;
-% lydp: depth of each layer interface, should include the inerface of the
+% lydp: depth of each layer interface, should include the interface of the
 % free surface (m). For free surface: 0-->sea-level, (+)positive-->below
-% sea-level, (-)negative-->above sea-level;
+% sea-level, (-)negative-->above sea-level; if length(lydp)=2, then it
+% means a homogeneous model;
 % recx: X coordinates of surface arrays (m), a vector, nr*1;
 % recy: Y coordinates of surface arrays (m), a vector, nr*1;
 % recz: Z coordinates of surface arrays (m), a vector, nr*1;
@@ -34,26 +35,26 @@ if nargin<8
     rwlz=[];
     srar=[];
     soup=[];
-    rmksize=6;
-    smksize=6;
+    rmksize=10;
+    smksize=10;
     wmksize=4;
     para.mulp = true;
 elseif nargin<10
     srar=[];
     soup=[];
-    rmksize=6;
-    smksize=6;
+    rmksize=10;
+    smksize=10;
     wmksize=4;
     para.mulp = true;
 elseif nargin<11
     soup=[];
-    rmksize=6;
-    smksize=6;
+    rmksize=10;
+    smksize=10;
     wmksize=4;
     para.mulp = true;
 elseif nargin<12
-    rmksize=6;
-    smksize=6;
+    rmksize=10;
+    smksize=10;
     wmksize=4;
     para.mulp = true;
 elseif nargin<15
@@ -158,7 +159,13 @@ lyxl=[xc(1) xc(1) xc(2)];
 lyyl=[yc(1) yc(2) yc(2)];
 lyxd=[xc(2) xc(2) xc(1)];
 lyyd=[yc(2) yc(1) yc(1)];
-nly=max(size(lydp));
+if length(lydp)>2
+    % layered model
+    nly=max(size(lydp));
+else
+    % homogeneous model when length(lydp)=2
+    nly=0;
+end
 
 figure;
 plot3(xg,yg,zg1,'k',xg,yg,zg2,'k');hold on; % plot the model
@@ -182,7 +189,7 @@ for i=1:nly
     plot3(lyxl,lyyl,lyz,'k');hold on;
     plot3(lyxd,lyyd,lyz,':k');hold on;
 end
-xlabel('X (km)','FontWeight','bold');ylabel('Y (km)','FontWeight','bold');zlabel('Depth (km)','FontWeight','bold');
+xlabel('North (km)','FontWeight','bold');ylabel('East (km)','FontWeight','bold');zlabel('Depth (km)','FontWeight','bold');
 box on;set(gca,'BoxStyle','full');
 set(gca,'Xdir','reverse');set(gca,'Zdir','reverse');
 set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');set(gca,'ZMinorGrid','on');
@@ -224,24 +231,32 @@ if ~isempty(rwlxy)
     end
 end
 axis equal;
-xlim([xc(1) xc(2)]);
-ylim([yc(1) yc(2)]);
+if xc(2)>xc(1)
+    xlim([xc(1) xc(2)]);
+end
+if yc(2)>yc(1)
+    ylim([yc(1) yc(2)]);
+end
 if ~isempty(srar)
     fill([srar(1,1) srar(1,2) srar(1,2) srar(1,1)],[srar(2,1) srar(2,1) srar(2,2) srar(2,2)],'y','linestyle','none','FaceAlpha',0.35);
 end
-axis ij;xlabel('X (km)','FontWeight','bold');ylabel('Y (km)','FontWeight','bold');
+axis ij;xlabel('North (km)','FontWeight','bold');ylabel('East (km)','FontWeight','bold');
 set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 view(-90,90); % vertical direction is X axis, horizontal direction is Y axis.
 
-h1size = get(h1,'Position');  % get the size of the first subplot
+
 % plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to X axis.
 if para.mulp
+    h1size = get(h1,'Position');  % get the size of the first subplot
     % plot the horizontal and vertical profiles in one figure
     subplot('Position',[0.1 0.1 h1size(3) 0.3]);
 else
     % plot the horizontal and vertical profiles in different figures
     figure;
+end
+for i=1:nly
+    plot([yc(1) yc(2)],[lydp(i) lydp(i)],'k','linewidth',1.6);hold on;% plot the layer boundarys
 end
 plot(recy,recz,'b.','markersize',rmksize);hold on; % plot the projection of surface arrays
 if ~isempty(soup)
@@ -255,24 +270,30 @@ if ~isempty(rwlxy)
         plot(rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
     end
 end
-for i=1:nly
-    plot([yc(1) yc(2)],[lydp(i) lydp(i)],'k','linewidth',1.6);hold on;% plot the layer boundarys
-end
 if ~para.mulp
     axis equal;
 end
-xlim([yc(1) yc(2)]); ylim([zc(1) zc(2)]);
+if yc(2)>yc(1)
+    xlim([yc(1) yc(2)]);
+end
+if zc(2)>zc(1)
+    ylim([zc(1) zc(2)]);
+end
 if ~isempty(srar)
     fill([srar(2,1) srar(2,2) srar(2,2) srar(2,1)],[srar(3,1) srar(3,1) srar(3,2) srar(3,2)],'y','linestyle','none','FaceAlpha',0.35);
 end
-axis ij;xlabel('Y (km)','FontWeight','bold');ylabel('Depth (km)','FontWeight','bold');
+axis ij;xlabel('East (km)','FontWeight','bold');ylabel('Depth (km)','FontWeight','bold');
 set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
+
 
 % plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to Y axis.
 if para.mulp
     % plot the horizontal and vertical profiles in one figure
     subplot('Position',[0.6 0.5 0.3 h1size(4)]);
+    for i=1:nly
+        plot([lydp(i) lydp(i)],[xc(1) xc(2)],'k','linewidth',1.6);hold on;% plot the layer boundarys
+    end
     plot(recz,recx,'b.','markersize',rmksize);hold on; % plot the projection of surface arrays
     if ~isempty(soup)
         for is=1:ns
@@ -285,18 +306,23 @@ if para.mulp
             plot(rwlz(iw,:),rwlx,'bv','markersize',wmksize);hold on; % downhole arrays
         end
     end
-    for i=1:nly
-        plot([lydp(i) lydp(i)],[xc(1) xc(2)],'k','linewidth',1.6);hold on;% plot the layer boundarys
+    if xc(2)>xc(1)
+        ylim([xc(1) xc(2)]);
     end
-    ylim([xc(1) xc(2)]); xlim([zc(1) zc(2)]);
+    if zc(2)>zc(1)
+        xlim([zc(1) zc(2)]);
+    end
     if ~isempty(srar)
         fill([srar(3,1) srar(3,1) srar(3,2) srar(3,2)],[srar(1,1) srar(1,2) srar(1,2) srar(1,1)],'y','linestyle','none','FaceAlpha',0.35);
     end
-    xlabel('Depth (km)','FontWeight','bold');ylabel('X (km)','FontWeight','bold');
+    xlabel('Depth (km)','FontWeight','bold');ylabel('North (km)','FontWeight','bold');
     set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 else
     % plot the horizontal and vertical profiles in different figures
     figure;
+    for i=1:nly
+        plot([xc(1) xc(2)],[lydp(i) lydp(i)],'k','linewidth',1.6);hold on;% plot the layer boundarys
+    end
     plot(recx,recz,'b.','markersize',rmksize);hold on; % plot the projection of surface arrays
     if ~isempty(soup)
         for is=1:ns
@@ -309,15 +335,17 @@ else
             plot(rwlx,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
         end
     end
-    for i=1:nly
-        plot([xc(1) xc(2)],[lydp(i) lydp(i)],'k','linewidth',1.6);hold on;% plot the layer boundarys
-    end
     axis equal;
-    xlim([xc(1) xc(2)]); ylim([zc(1) zc(2)]);
+    if xc(2)>xc(1)
+        xlim([xc(1) xc(2)]);
+    end
+    if zc(2)>zc(1)
+        ylim([zc(1) zc(2)]);
+    end
     if ~isempty(srar)
         fill([srar(1,1) srar(1,2) srar(1,2) srar(1,1)],[srar(3,1) srar(3,1) srar(3,2) srar(3,2)],'y','linestyle','none','FaceAlpha',0.35);
     end
-    axis ij;xlabel('X (km)','FontWeight','bold');ylabel('Depth (km)','FontWeight','bold');
+    axis ij;xlabel('North (km)','FontWeight','bold');ylabel('Depth (km)','FontWeight','bold');
     set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 end
 

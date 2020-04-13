@@ -101,4 +101,9 @@ for ire=1:nre
 end
 axis tight;
 set(gca,'ytick',1:nre,'yticklabel',name(idf)); % display the correct distance label
-xlabel('Time'); ylabel('Station code');
+if ~isempty(t0)
+    xlabel('Time');
+else
+    xlabel('Time (s)');
+end
+ylabel('Station code');

@@ -20,6 +20,8 @@ end
 
 % read the source file
 [dt,nt,ns,source]=rdsourcef(sname);
+% NOTE the time delay: t0 is already integrated into the source time
+% function: source.stf!
 
 % read the receiver file
 stations=rdreceiverf(rname);
@@ -44,7 +46,7 @@ if nl==1
         if source(ids).sftp==1
             % use Ricker wavelet, can generate waveforms using the
             % analytical expressions of the wavelet
-            [tux,tuy,tuz]=gsynwhomo_rickerw(model.vp,model.vs,model.den,recp,source(ids).pos,smt,dt,nt,source(ids).freq);
+            [tux,tuy,tuz]=gsynwhomo_rickerw(model.vp,model.vs,model.den,recp,source(ids).pos,smt,dt,nt,source(ids).freq,source(ids).t0);
         elseif source(ids).sftp==-1
             % use impuse as source time function, calculate the Green's function
             [tux,tuy,tuz]=homogreenf(model.vp,model.vs,model.den,recp,source(ids).pos,smt,dt,nt,source(ids).t0);

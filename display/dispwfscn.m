@@ -103,7 +103,8 @@ for ire=1:nre
         end
     end
 end
-axis tight; set(gca,'ytick',ofsda,'yticklabel',num2str(ofsd,'%.2f')); % display the correct distance label
+axis tight; 
+set(gca,'ytick',unique(ofsda),'yticklabel',num2str(unique(ofsd),'%.2f')); % display the correct distance label
 if isempty(data_t0)
     % no starting time input
     xlabel('Time (s)'); ylabel('Distance (km)');

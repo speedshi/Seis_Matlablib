@@ -83,9 +83,11 @@ end
 
 % get earthquake positions, can be more than one earthquake, each row shows
 % positions of an earthquake
-if ~isempty(earthquake)
+if ~isempty(earthquake) && ~isfield(earthquake,'east')
     [seast,snorth,sdepth]=geod2cart(earthquake.latitude,earthquake.longitude,-earthquake.depth);
     seisp=[snorth,seast,sdepth]; % earthquake positions
+elseif isfield(earthquake,'east')
+    seisp = [earthquake.north(:),earthquake.east(:),earthquake.depth(:)];
 else
     seisp=[];
 end
