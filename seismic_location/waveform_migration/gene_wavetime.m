@@ -40,7 +40,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 %
 % OUTPUT-------------------------------------------------------------------
 % trace: matlab structure, contain selected data information;
-% trace.data: seismic data, 2D array, n_sta*nt;
+% trace.data: seismic data for migration, 2D array, n_sta*nt;
 % trace.fe: sampling frequency of seismic data, in Hz, scalar;
 % trace.dt: time sampling interval of seismic data, in second, scalar;
 % trace.name: name of selected stations, vector, 1*n_sta;

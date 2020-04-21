@@ -33,7 +33,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % search.dn: spatial interval in the north direction, in meter;
 % search.de: spatial interval in the east direction, in meter;
 % search.dd: spatial interval in the depth direction, in meter;
-% mcm: matlab structure, specify MCM parameters, used to generate 'migpara.dat';
+% mcm: matlab structure, specify MCM parameters controlling the migration process;
 % mcm.filter: matlab structure, contains filtering information to filter seismic data;
 % mcm.filter.freq: frequency band used to filter the seismic data, a vector containing 1 or 2 elements, in Hz
 % mcm.filter.type: filter type, can be 'low', 'bandpass', 'high', 'stop'
@@ -74,7 +74,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % mcm: matlab structure, MCM parameters and configuration information.
 
 
-% set default parameters---------------------------------------------------
+% set default input parameters---------------------------------------------
 if nargin==2
     mcm=[];
     precision='double';
@@ -85,7 +85,10 @@ end
 if isempty(precision)
     precision='double';
 end
+%--------------------------------------------------------------------------
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set default mcm parameters
 % set default seismic data component to perform migration
 if ~isfield(mcm,'component')
     mcm.component='Z';
@@ -100,6 +103,44 @@ end
 if ~isfield(mcm,'utmstruct')
     mcm.utmstruct = [];
 end
+
+% set run parameter
+if ~isfield(mcm,'run')
+    mcm.run=-1;
+end
+
+% set filtering parameters
+if ~isfield(mcm,'filter')
+    mcm.filter=[];
+end
+
+% set normalization range for showing the migration volume
+if ~isfield(mcm,'snormrg')
+    mcm.snormrg=[];
+end
+
+% set whether to show the waveforms of each station according to the location result
+if ~isfield(mcm,'staplot')
+    mcm.staplot=false;
+end
+
+% whether to plot a contour-line on the migration profile and where
+if ~isfield(mcm,'ctlpct')
+    mcm.ctlpct=[]; % default is not plotting
+end
+
+% parameter to contral waveform ploting after migration:
+% if true: plot characteristic funtions after migration; 
+% if false: plot original waveforms after migration;
+if ~isfield(mcm,'chrplot')
+    mcm.chrplot=false;
+end
+
+% whether to transform the migration volume before displaying
+if ~isfield(mcm,'migvtsf')
+    mcm.migvtsf=[]; % default is not transform
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % check if the working directory exists, if not, then create it
@@ -125,7 +166,7 @@ if isstruct(file.seismic)
 else
     % input is the file name of seismic data, need to load information from
     % file
-    seismic=read_seis(file.seismic);
+    seismic=read_seis(file.seismic,mcm.component);
 end
 
 % check if need to reset the t0 of the seismic data
@@ -181,39 +222,29 @@ else
 end
 
 
-if ~isfield(mcm,'filter')
-    mcm.filter=[];
-end
-
 % generate binary files for seismic data and traveltimes
 trace=gene_wavetime(seismic,stations,mcm.filter,precision,[],[],[]);
 
 % assemble the station positions, X-Y-Z i.e. North-East-Depth
 trace.recp=[trace.north(:) trace.east(:) trace.depth(:)];
 
-% generate text files for mcm parameters
-if isfield(mcm,'migtp')
-    mcm.nre=size(trace.data,1); % number of stations
-    mcm.nsr=size(search.soup,1); % number of imaging points
-    mcm.dfname='waveform.dat'; % file name of seismic data
-    mcm.dt=trace.dt; % time sampling interval, in second
-    mcm.tdatal=(size(trace.data,2)-1)*trace.dt; % time length of the whole seismic data in second (s)
-    mcm.vthrd=0.001; % threshold value for identifying seismic event in the migration volume
-    mcm.spaclim=0; % the space limit in searching for potential seismic events, in meter (m)
-    mcm.timelim=0; % the time limit in searching for potential seismic events, in second (s)
-    mcm.nssot=1; % the maximum number of potential seismic events can be accept for a single origin time
-end
-
-
-if ~isfield(mcm,'run')
-    mcm.run=-1;
-end
+% generate mcm parameters for outputting text files for Fortran program
+mcm.nre=size(trace.data,1); % number of stations
+mcm.nsr=size(search.soup,1); % number of imaging points
+mcm.dfname='waveform.dat'; % file name of seismic data
+mcm.dt=trace.dt; % time sampling interval, in second
+mcm.tdatal=(size(trace.data,2)-1)*trace.dt; % time length of the whole seismic data in second (s)
+mcm.vthrd=0.001; % threshold value for identifying seismic event in the migration volume
+mcm.spaclim=0; % the space limit in searching for potential seismic events, in meter (m)
+mcm.timelim=0; % the time limit in searching for potential seismic events, in second (s)
+mcm.nssot=1; % the maximum number of potential seismic events can be accept for a single origin time
 
 
 mcm.datat0=seismic.t0; % the starting time (t0) of seismic data, datetime
 
 % mcm.dtimerg: time range of the seismic data
-mcm.dtimerg=[mcm.datat0; mcm.datat0+seconds((size(trace.data,2)-1)*trace.dt)];
+mcm.dtimerg=[mcm.datat0; mcm.datat0+seconds(mcm.tdatal)];
+
 
 
 % check if need to run the MCM program
@@ -241,7 +272,7 @@ switch mcm.run
         [s_pro,n_var]=mcm_test_freqband(file.seismic,stations,mcm,earthquake,search);
         
     case 2
-        fprintf('Run MCM testing program with the catalog input.\n');
+        fprintf('Run MCM Matlab-lite program with the catalog input.\n');
         
         % obtain the information of the specified earthquake
         earthquake=get_earthquake(mcm,search);
@@ -253,9 +284,11 @@ switch mcm.run
         migv=runmcm_matlab_test(trace,mcm,search,earthquake);
         
     case 3
-        fprintf('Run MCM Matlab testing program with an input time range.\n');
+        fprintf('Run MCM Matlab-lite program with an input time range.\n');
         
         if isfield(mcm,'test') && isfield(mcm.test,'mtrg')
+            % In this situation, the input time range is in datetime format.
+            
             % chech if the input time range are feasible
             if mcm.test.mtrg(1)<mcm.dtimerg(1) || mcm.test.mtrg(1)>mcm.test.mtrg(2) || mcm.test.mtrg(2)>=mcm.dtimerg(2)
                 error('Incorrect input for mcm.test.mtrg! Not applicable.');
@@ -266,19 +299,29 @@ switch mcm.run
             time_end=seconds(mcm.test.mtrg(2)-mcm.datat0); % ending time for migration, relative to data_t0 in second
             mcm.st0=time_start:mcm.dt0:time_end;
         else
-            % set default searching time range
+            % In this situation, the input time range is in second
+            % relative the staring time of seismic data. Or no input time
+            % range, using a default searching time range.
             mcm=detmst0(mcm,trace);
         end
         
         % check if there is input earthquake information
         if isfield(mcm,'earthquake')
             earthquake = mcm.earthquake;
+            if isa(earthquake.t0,'datetime')
+                % if origin time is in datetime format, then transfor it in 
+                % second relative to the starting time of seismic data.
+                earthquake.t0 = second(earthquake.t0-mcm.datat0);
+            end
         else
             earthquake = [];
         end
         
         % run mcm in the input time range
         migv=runmcm_matlab_test(trace,mcm,search,earthquake);
+        
+        % save the migration volume
+        save([folder '/migv.mat'],'migv','-v7.3');
         
     case 4
         fprintf('Run MCM Matlab program.\n');

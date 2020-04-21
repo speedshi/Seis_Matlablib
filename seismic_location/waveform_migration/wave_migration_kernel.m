@@ -39,7 +39,7 @@ travels=trace.travels; % S-wave traveltime table in second
 % format the data, note the data matrix format, it should be: nt*nre
 data=trace.data';
 
-st0=mcm.st0; % searched origin times (second)
+st0=mcm.st0; % searched origin times (in second relative to the starting time of data)
 
 % migration time window length
 npwd=round(mcm.tpwind/dt)+1; % P-wave time window in points

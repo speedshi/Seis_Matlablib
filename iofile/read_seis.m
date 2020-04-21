@@ -20,7 +20,10 @@ function seismic=read_seis(fname,comp)
 % seismic.fe: scaler, the sampling frequency of the data, in Hz;
 % seismic.dt: scaler, the time sample interval of the data, in second;
 % seismic.t0: matlab datetime, the origin time of the seismic data;
-% seismic.data: 2D array, ns*nt, contains seismic data;
+% seismic.data: 2D array, ns*nt, seismic data for migration;
+% seismic.zdata: 2D array, ns*nt, seismic data: Z component, optional;
+% seismic.ndata: 2D array, ns*nt, seismic data: N component, optional;
+% seismic.edata: 2D array, ns*nt, seismic data: E component, optional;
 % seismic.network: cell array, the name of the network;
 % seismic.component: cell array, the name of the data component (usually N, E or Z);
 
@@ -64,7 +67,15 @@ elseif strcmp(fname{1}(end-3:end),'.sac') || strcmp(fname{1}(end-3:end),'.SAC')
 elseif strcmp(fname{1}(end-3:end),'.mat') || strcmp(fname{1}(end-3:end),'.MAT')
     % read in the MAT format data
     seismic=read_seismat(fname{1});  % all in one file
-    seismic.component=comp; % reset the data component
+    seismic.component=comp; % set the data component
+    % set seismic.data using the specified data component
+    if strcmp(comp,'Z') || strcmp(comp,'z')
+        seismic.data=seismic.zdata;
+    elseif strcmp(comp,'N') || strcmp(comp,'n')
+        seismic.data=seismic.ndata;
+    elseif strcmp(comp,'E') || strcmp(comp,'e')
+        seismic.data=seismic.edata;
+    end
     
 else
     error('Unrecognised format of seismic data.');
