@@ -128,13 +128,13 @@ end
 figure;
 if ~isempty(para.taxis)
     % has input time axis
-    plot(para.taxis,data(:,xn,yn,zn),'k','linewidth',1.6,'Marker','o','MarkerFaceColor','k','MarkerSize',3);
+    plot(para.taxis,data(:,xn,yn,zn),'k','linewidth',1.6,'Marker','o','MarkerFaceColor','k','MarkerSize',2);
     hold on;
     plot(para.taxis(tn),data(tn,xn,yn,zn),'r','Marker','o','MarkerFaceColor','r','MarkerSize',6);
     xlabel('Time');
 else
     % no input time axis
-    plot(data(:,xn,yn,zn),'k','linewidth',1.6,'Marker','o','MarkerFaceColor','k','MarkerSize',3); 
+    plot(data(:,xn,yn,zn),'k','linewidth',1.6,'Marker','o','MarkerFaceColor','k','MarkerSize',2); 
     hold on;
     plot(tn,data(tn,xn,yn,zn),'r','Marker','o','MarkerFaceColor','r','MarkerSize',6);
     xlabel('Time samples');
