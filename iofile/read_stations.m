@@ -113,6 +113,10 @@ end
 if ismember('Latitude',stall.Properties.VariableNames)
     [stations.east,stations.north,stations.depth,stations.utmstruct] = ...
     geod2cart(stations.latitude,stations.longitude,stations.elevation,utmstruct);
+else 
+    % The input file already contain Cartesian coordinates,
+    % No need to transfer, just record the current UTM parameters.
+    stations.utmstruct = utmstruct;
 end
 
 

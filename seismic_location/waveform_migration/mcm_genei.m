@@ -174,6 +174,10 @@ if isfield(mcm,'datat0')
     seismic.t0=mcm.datat0;
 end
 
+% replace all 0 values in the seismic data using random eps values to
+% stablize the calculation
+seismic.data = ireplace_zeros(seismic.data);
+
 % show the spectrogram of the original seismic data
 if isfield(mcm,'stationid') && ~isempty(mcm.stationid)
     ispectrogram(seismic,mcm.stationid);

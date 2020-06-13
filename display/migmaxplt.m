@@ -81,11 +81,11 @@ if ~isvector(pdis)
         cyy = linspace(yy(1),yy(2),size(pdis,2));
         contour(gca,cxx,cyy,pdis,[ctlv ctlv],'k','linewidth',1.2); % plot the contour-line
     end
-    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)');
+    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)'); title('Sliced profile');
     
     figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('East-Depth plane (sliced)'); %caxis([0 1]);
 end
 
 % plot the Y profile
@@ -94,7 +94,7 @@ if ~isvector(pdis)
     xx=[tarxr(1) tarxr(2)];yy=[tarzr(1) tarzr(2)]; % horizontal and vertical range
     figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
     plot(soup(1),soup(3),'kp','MarkerSize',9); hold on; %caxis([0 1]);
-    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)');
+    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)'); title('Sliced profile');
     if ~isempty(para.ctlpct)
         cxx = linspace(xx(1),xx(2),size(pdis,1));
         cyy = linspace(yy(1),yy(2),size(pdis,2));
@@ -103,7 +103,7 @@ if ~isvector(pdis)
     
     figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('North-Depth plane (sliced)'); %caxis([0 1]);
 end
 
 % plot the Z profile
@@ -112,7 +112,7 @@ if ~isvector(pdis)
     xx=[taryr(1) taryr(2)];yy=[tarxr(1) tarxr(2)]; % horizontal and vertical range
     figure;imagesc(xx,yy,pdis);colormap('jet');colorbar; hold on;
     plot(soup(2),soup(1),'kp','MarkerSize',9); hold on; %caxis([0 1]);
-    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)');
+    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)'); title('Sliced profile');
     if ~isempty(para.ctlpct)
         cxx = linspace(xx(1),xx(2),size(pdis,1));
         cyy = linspace(yy(1),yy(2),size(pdis,2));
@@ -121,7 +121,7 @@ if ~isvector(pdis)
     
     figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('East-North plane (sliced)'); %caxis([0 1]);
 end
 
 % Plot the stacking function at the located source position
@@ -151,7 +151,7 @@ pdis=reshape(max(imagz,[],1),nyr,nzr)'; % find the maximum value in X domain
 if ~isvector(pdis)
     figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
     plot(soup(2),soup(3),'kp','MarkerSize',9); hold on;
-    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)');
+    axis equal; axis tight; xlabel('East (km)'); ylabel('Depth (km)'); title('Projected profile');
     if ~isempty(para.ctlpct)
         cxx = linspace(xx(1),xx(2),size(pdis,1));
         cyy = linspace(yy(1),yy(2),size(pdis,2));
@@ -160,7 +160,7 @@ if ~isvector(pdis)
     
     figure; surf(yyr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(2),soup(3),pdis(s1id(3),s1id(2)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('YZ-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('East-Depth plane (projected)'); %caxis([0 1]);
 end
 
 % projection on X-Z profile
@@ -170,7 +170,7 @@ pdis=reshape(max(imagz,[],2),nxr,nzr)'; % find the maximum value in Y domain
 if ~isvector(pdis)
     figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
     plot(soup(1),soup(3),'kp','MarkerSize',9); hold on;
-    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)');
+    axis equal; axis tight; xlabel('North (km)'); ylabel('Depth (km)'); title('Projected profile');
     if ~isempty(para.ctlpct)
         cxx = linspace(xx(1),xx(2),size(pdis,1));
         cyy = linspace(yy(1),yy(2),size(pdis,2));
@@ -179,7 +179,7 @@ if ~isvector(pdis)
     
     figure; surf(xxr,zzr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(1),soup(3),pdis(s1id(3),s1id(1)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('XZ-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('North-Depth plane (projected)'); %caxis([0 1]);
 end
 
 % projection on X-Y profile
@@ -189,7 +189,7 @@ pdis=reshape(max(imagz,[],3),nxr,nyr); % find the maximum value in Z domain
 if ~isvector(pdis)
     figure;imagesc(xx,yy,pdis);colormap('jet(512)');colorbar; hold on;
     plot(soup(2),soup(1),'kp','MarkerSize',9); hold on;
-    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)');
+    axis equal; axis tight; axis xy; xlabel('East (km)'); ylabel('North (km)'); title('Projected profile');
     if ~isempty(para.ctlpct)
         cxx = linspace(xx(1),xx(2),size(pdis,1));
         cyy = linspace(yy(1),yy(2),size(pdis,2));
@@ -198,7 +198,7 @@ if ~isvector(pdis)
     
     figure; surf(yyr,xxr,pdis,'LineStyle','none','FaceColor','interp'); hold on;
     plot3(soup(2),soup(1),pdis(s1id(1),s1id(2)),'ko','MarkerSize',6,'MarkerFaceColor','k'); hold on;
-    axis tight; axis off; colormap('jet'); colorbar; title('XY-plane'); %caxis([0 1]);
+    axis tight; axis off; colormap('jet'); colorbar; title('East-North plane (projected)'); %caxis([0 1]);
 end
 
 end
