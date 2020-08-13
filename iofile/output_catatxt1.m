@@ -17,6 +17,7 @@ if nargin < 2
     fname='catalog.txt';
     para.rftime='toordinal';
     para.distance=false;
+    para.fnew=true;
 end
 
 if ~isfield(para,'rftime')
@@ -27,13 +28,17 @@ if ~isfield(para,'distance')
     para.distance=false;
 end
 
+if ~isfield(para,'fnew')
+    para.fnew=true;
+end
+
 n=length(catalog.time); % number of earthquakes in the input catalog
 
 
 
 if strcmp(para.rftime,'toordinal')
     % relative days count from the date AD 01/01/01, i.e.
-    % equivalent to python datetime.toordinal() function.
+    % equivalent to python datetime.toordinal() or mdates.date2num() function.
     rtimes=datenum(catalog.time)-366;
 else
     % use days relative to a input datetime
@@ -41,8 +46,13 @@ else
 end
 
 
-
-fid=fopen(fname,'wt');
+if para.fnew
+    % output to a new file
+    fid=fopen(fname,'wt');
+else
+    % append to an existing file
+    fid=fopen(fname,'at');
+end
 
 % output the text file
 if para.distance
