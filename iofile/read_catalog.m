@@ -1,4 +1,4 @@
-function catalog=read_catalog(file_cata,timerg,search)
+function catalog=read_catalog(file_cata,timerg,search,utmstruct)
 % This function is used to read in the catalog information. The catalog
 % file is in IRIS text format.
 %
@@ -14,6 +14,7 @@ function catalog=read_catalog(file_cata,timerg,search)
 % search.north: 1*2, imaging area in the north direction, in meter;
 % search.east: 1*2, imaging area in the east direction, in meter;
 % search.depth: 1*2, imaging area in the depth direction, in meter;
+% utmstruct: the UTM parameter for coordinate transfermation.
 %
 % OUTPUT-------------------------------------------------------------------
 % catalog: matlab structure which contains corresponding catalog infomation
@@ -25,13 +26,18 @@ function catalog=read_catalog(file_cata,timerg,search)
 % catalog.east: East Cartisian coordinate in meter;
 % catalog.depth: Depth Cartisian coordinate in meter;
 % catalog.magnitude: magnitude of earthquakes;
+% catalog.utmstruct: the UTM parameter for coordinate transfermation.
 
 % set default parameters
 if nargin == 1
     timerg=[];
     search=[];
+    utmstruct=[];
 elseif nargin == 2
     search=[];
+    utmstruct=[];
+elseif nargin == 3
+    utmstruct=[];
 end
 
 opts=detectImportOptions(file_cata);
@@ -44,7 +50,13 @@ catalog.longitude=catainfo.Longitude; % obtain longitude info
 catalog.elevation=catainfo.Depth_Km*-1000; % obtain elevation info, note the unit transfer
 
 % obtain Cartisian coordinates using default wgs84Ellipsoid system
-[catalog.east,catalog.north,catalog.depth]=geod2cart(catalog.latitude,catalog.longitude,catalog.elevation);
+if isempty(utmstruct)
+    % no input utmstruct
+    [catalog.east,catalog.north,catalog.depth,catalog.utmstruct]=geod2cart(catalog.latitude,catalog.longitude,catalog.elevation);
+else
+    % user input utmstruct
+    [catalog.east,catalog.north,catalog.depth,catalog.utmstruct]=geod2cart(catalog.latitude,catalog.longitude,catalog.elevation,utmstruct);
+end
 
 % obtain magnitude info
 catalog.magnitude=catainfo.Magnitude;
