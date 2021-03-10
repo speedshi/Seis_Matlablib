@@ -3,7 +3,7 @@ function plotmpsd(thk,vp,vs,den,qp,qs,hlay)
 % The function will plot P-wave velocity, S-wave velocity, density, QP and QS of
 % the layered model.
 % 'thk', 'vp', 'vs', 'den', 'qp' and 'qs' must be a vector and have the same length.
-% INPUT--------------------------------------------------- 
+% INPUT---------------------------------------------------
 % thk: thickness of each layer (m), nl*1;
 % vp: P-wave velocity of each layer (m/s), nl*1;
 % vs: S-wave velocity of each layer (m/s), nl*1;
@@ -26,7 +26,7 @@ deni=zeros(2*nl,1);
 qpi=zeros(2*nl,1);
 qsi=zeros(2*nl,1);
 sthk=sum(thk); % total depth of all layers
-zc=[0 sthk];  % boundry of depth axis of the model (m)
+zc=[0 sthk]/1000;  % boundry of depth axis of the model (km)
 
 for i=1:nl
     if (i<nl)
@@ -40,19 +40,28 @@ for i=1:nl
     vpi(2*i)=vp(i);
     vsi(2*i-1)=vs(i);
     vsi(2*i)=vs(i);
-    deni(2*i-1)=den(i);
-    deni(2*i)=den(i);
-    qpi(2*i-1)=qp(i);
-    qpi(2*i)=qp(i);
-    qsi(2*i-1)=qs(i);
-    qsi(2*i)=qs(i);
+    if den
+        deni(2*i-1)=den(i);
+        deni(2*i)=den(i);
+    end
+    if qp
+        qpi(2*i-1)=qp(i);
+        qpi(2*i)=qp(i);
+    end
+    if qs
+        qsi(2*i-1)=qs(i);
+        qsi(2*i)=qs(i);
+    end
 end
+
+% transfer from meter to km
+thki = thki/1000;
 
 figure;
 xx1=vpi; xx2=vsi;
 hf=plot(xx1,thki,'b',xx2,thki,'r');
 set(hf,'linewidth',1.5);
-xlabel('Velocity (m/s)'); ylabel('Depth (m)');
+xlabel('Velocity (m/s)'); ylabel('Depth (km)');
 legend('Vp','Vs');
 xmin=min([min(xx1) min(xx2)]);
 xmax=max([max(xx1) max(xx2)]);
@@ -64,7 +73,7 @@ axis ij;
 figure;
 xx=vpi;
 plot(xx,thki,'b','linewidth',1.5);
-xlabel('Vp (m/s)');ylabel('Depth (m)');
+xlabel('Vp (m/s)');ylabel('Depth (km)');
 xmin=min(xx);xmax=max(xx);
 dxl=0.15*(xmax-xmin);
 xmin=xmin-dxl;xmax=xmax+dxl;
@@ -74,43 +83,49 @@ axis ij;
 figure;
 xx=vsi;
 plot(xx,thki,'b','linewidth',1.5);
-xlabel('Vs (m/s)');ylabel('Depth (m)');
+xlabel('Vs (m/s)');ylabel('Depth (km)');
 xmin=min(xx);xmax=max(xx);
 dxl=0.15*(xmax-xmin);
 xmin=xmin-dxl;xmax=xmax+dxl;
 xlim([xmin xmax]); ylim([zc(1) zc(2)]);
 axis ij;
 
-figure;
-xx=deni;
-plot(xx,thki,'b','linewidth',1.5);
-xlabel('Density (kg/m^3)');ylabel('Depth (m)');
-xmin=min(xx);xmax=max(xx);
-dxl=0.15*(xmax-xmin);
-xmin=xmin-dxl;xmax=xmax+dxl;
-xlim([xmin xmax]); ylim([zc(1) zc(2)]);
-axis ij;
+if den
+    figure;
+    xx=deni;
+    plot(xx,thki,'b','linewidth',1.5);
+    xlabel('Density (kg/m^3)');ylabel('Depth (km)');
+    xmin=min(xx);xmax=max(xx);
+    dxl=0.15*(xmax-xmin);
+    xmin=xmin-dxl;xmax=xmax+dxl;
+    xlim([xmin xmax]); ylim([zc(1) zc(2)]);
+    axis ij;
+end
+
+if qp
+    figure;
+    xx=qpi;
+    plot(xx,thki,'b','linewidth',1.5);
+    xlabel('Qp');ylabel('Depth (km)');
+    xmin=min(xx);xmax=max(xx);
+    xmin=xmin-100;xmax=xmax+100;
+    xlim([xmin xmax]); ylim([zc(1) zc(2)]);
+    axis ij;
+end
+
+if qs
+    figure;
+    xx=qsi;
+    plot(xx,thki,'b','linewidth',1.5);
+    xlabel('Qs');ylabel('Depth (km)');
+    xmin=min(xx);xmax=max(xx);
+    xmin=xmin-100;xmax=xmax+100;
+    xlim([xmin xmax]); ylim([zc(1) zc(2)]);
+    axis ij;
+end
 
 figure;
-xx=qpi;
-plot(xx,thki,'b','linewidth',1.5);
-xlabel('Qp');ylabel('Depth (m)');
-xmin=min(xx);xmax=max(xx);
-xmin=xmin-100;xmax=xmax+100;
-xlim([xmin xmax]); ylim([zc(1) zc(2)]);
-axis ij;
-
-figure;
-xx=qsi;
-plot(xx,thki,'b','linewidth',1.5);
-xlabel('Qs');ylabel('Depth (m)');
-xmin=min(xx);xmax=max(xx);
-xmin=xmin-100;xmax=xmax+100;
-xlim([xmin xmax]); ylim([zc(1) zc(2)]);
-axis ij;
-
-figure;
-subplot(1,3,1); xx=vpi/1000; yy=thki/1000;
+subplot(1,3,1); xx=vpi/1000; yy=thki;
 plot(xx,yy,'b','linewidth',1.5); hold on;
 xlabel('Vp ($$\mathrm{km}/\mathrm{s}$$)','Interpreter','latex');ylabel('Depth ($$\mathrm{km}$$)','Interpreter','latex');
 xmin=min(xx);xmax=max(xx);
@@ -122,9 +137,10 @@ if hlay~=0
         fill([xmin xmax xmax xmin],[yy(2*hlay(ii)-1) yy(2*hlay(ii)-1) yy(2*hlay(ii)) yy(2*hlay(ii))],'r','linestyle','none','FaceAlpha',0.35); hold on;
     end
 end
-xlim([xmin xmax]); ylim([zc(1) zc(2)]/1000);
+xlim([xmin xmax]); ylim([zc(1) zc(2)]);
 axis ij;
-subplot(1,3,2); xx=vsi/1000; yy=thki/1000;
+
+subplot(1,3,2); xx=vsi/1000; yy=thki;
 plot(xx,yy,'b','linewidth',1.5); hold on;
 xlabel('Vs ($$\mathrm{km}/\mathrm{s}$$)','Interpreter','latex');
 %xlabel('Vs ($$km/s$$)','Interpreter','latex');
@@ -137,22 +153,25 @@ if hlay~=0
         fill([xmin xmax xmax xmin],[yy(2*hlay(ii)-1) yy(2*hlay(ii)-1) yy(2*hlay(ii)) yy(2*hlay(ii))],'r','linestyle','none','FaceAlpha',0.35); hold on;
     end
 end
-xlim([xmin xmax]); ylim([zc(1) zc(2)]/1000);
+xlim([xmin xmax]); ylim([zc(1) zc(2)]);
 axis ij;
-subplot(1,3,3); xx=deni/1000; yy=thki/1000;
-plot(xx,yy,'b','linewidth',1.5); hold on;
-xlabel('Density ($$\mathrm{g}/\mathrm{cm}^3$$)','Interpreter','latex');
-xmin=min(xx);xmax=max(xx);
-dxl=0.15*(xmax-xmin);
-xmin=xmin-dxl;xmax=xmax+dxl;
-% hight light the target layer
-if hlay~=0
-    for ii=1:length(hlay)
-        fill([xmin xmax xmax xmin],[yy(2*hlay(ii)-1) yy(2*hlay(ii)-1) yy(2*hlay(ii)) yy(2*hlay(ii))],'r','linestyle','none','FaceAlpha',0.35); hold on;
+
+if den
+    subplot(1,3,3); xx=deni/1000; yy=thki;
+    plot(xx,yy,'b','linewidth',1.5); hold on;
+    xlabel('Density ($$\mathrm{g}/\mathrm{cm}^3$$)','Interpreter','latex');
+    xmin=min(xx);xmax=max(xx);
+    dxl=0.15*(xmax-xmin);
+    xmin=xmin-dxl;xmax=xmax+dxl;
+    % hight light the target layer
+    if hlay~=0
+        for ii=1:length(hlay)
+            fill([xmin xmax xmax xmin],[yy(2*hlay(ii)-1) yy(2*hlay(ii)-1) yy(2*hlay(ii)) yy(2*hlay(ii))],'r','linestyle','none','FaceAlpha',0.35); hold on;
+        end
     end
+    xlim([xmin xmax]); ylim([zc(1) zc(2)]);
+    axis ij;
 end
-xlim([xmin xmax]); ylim([zc(1) zc(2)]/1000);
-axis ij;
 
 
 end

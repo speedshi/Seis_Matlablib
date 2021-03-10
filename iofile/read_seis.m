@@ -61,8 +61,16 @@ if strcmp(fname{1}(end-2:end),'.h5') || strcmp(fname{1}(end-2:end),'.H5')
     
 elseif strcmp(fname{1}(end-3:end),'.sac') || strcmp(fname{1}(end-3:end),'.SAC')
     % read in the SAC format data
-    seismic=read_seissac(fname);
+    seismic=read_seissac(fname,comp);
     seismic.component=comp; % reset the data component
+%     % set seismic.data using the specified data component
+%     if strcmp(comp,'Z') || strcmp(comp,'z')
+%         seismic.data=seismic.zdata;
+%     elseif strcmp(comp,'N') || strcmp(comp,'n')
+%         seismic.data=seismic.ndata;
+%     elseif strcmp(comp,'E') || strcmp(comp,'e')
+%         seismic.data=seismic.edata;
+%     end
     
 elseif strcmp(fname{1}(end-3:end),'.mat') || strcmp(fname{1}(end-3:end),'.MAT')
     % read in the MAT format data

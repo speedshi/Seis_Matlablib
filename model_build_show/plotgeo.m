@@ -26,6 +26,12 @@ function plotgeo(xc,yc,zc,lydp,recx,recy,recz,rwlxy,rwlz,srar,soup,rmksize,smksi
 % wmksize: markersize of the downhole receivers;
 % para.mulp: logical, whether to show the figure in one window using subplot;
 % para.sname: names of the surface stations;
+% para.marker: a marker for highlighting;
+% para.marker.x: X locations of markers, in meter;
+% para.marker.y: Y locations of markers, in meter;
+% para.marker.z: Z locations of markers, in meter;
+% para.marker.sz: marker size;
+% para.marker.name: give a name of the makers, such as 'mainshock';
 % OUTPUT---------------------------------------------------------
 % Three figures show the model geometry and surface projection
 % and 2 vertical projection of sources and downhole arrays.
@@ -142,6 +148,12 @@ rwlxy=rwlxy/1000;
 rwlz=rwlz/1000;
 srar=srar/1000;
 soup=soup/1000;
+if isfield(para,'marker') && ~isempty(para.marker)
+    marker.x = para.marker.x/1000;
+    marker.y = para.marker.y/1000;
+    marker.z = para.marker.z/1000;
+end
+
 
 if ~isempty(rwlxy)
     rwlpx=rwlxy(:,1); % X positon of downhole arrays
@@ -167,22 +179,32 @@ else
     nly=0;
 end
 
+
+
+%% Plot
 figure;
 plot3(xg,yg,zg1,'k',xg,yg,zg2,'k');hold on; % plot the model
 axis tight;
 if ~isempty(soup)
+    % plot events
     for is=1:ns
         plot3(soup(is,1),soup(is,2),soup(is,3),'rp','markersize',smksize);hold on; % plot the source point
     end
 end
 plot3(recx,recy,recz,'b.','markersize',rmksize);hold on; % plot the surface arrays
 if ~isempty(rwlxy)
+    % plot downhole stations
     for iw=1:ndh
         rwlx=rwlpx(iw)*ones(size(rwlz(iw,:)));
         rwly=rwlpy(iw)*ones(size(rwlz(iw,:)));
-        plot3(rwlx,rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % plot the down hole arrays
+        plot3(rwlx,rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % plot the downhole arrays
     end
 end
+if isfield(para,'marker') && ~isempty(para.marker)
+    % plot markers
+    plot3(marker.x,marker.y,marker.z,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
+end
+
 for i=1:nly
     % plot the layers
     lyz=lydp(i)*ones(size(lyxl));
@@ -202,7 +224,9 @@ if ~isempty(srar)
 end
 view([116,22]);
 
-% plot the surface projection of sources, surface and downhole arrays
+
+
+%% plot the surface projection of sources, surface and downhole arrays
 if para.mulp
     % plot the horizontal and vertical profiles in one figure
     figure('InnerPosition',[300,100,750,750]);
@@ -216,7 +240,7 @@ plot(recx,recy,'b.','markersize',rmksize); hold on; % plot the projection of sur
 if isfield(para,'sname')
     % add the name of the stations
     for ii=1:length(para.sname)
-        text(recx(ii)-0.25,recy(ii)-0.2,para.sname{ii});
+        text(recx(ii)-0.035*(xc(2)-xc(1)),recy(ii)-0.06*(yc(2)-yc(1)),para.sname{ii});
     end
 end
 
@@ -229,6 +253,10 @@ if ~isempty(rwlxy)
     for iw=1:ndh
         plot(rwlpx(iw),rwlpy(iw),'bv','markersize',wmksize);hold on; % downhole arrays
     end
+end
+if isfield(para,'marker') && ~isempty(para.marker)
+    % plot markers
+    plot(marker.x,marker.y,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
 end
 axis equal;
 if xc(2)>xc(1)
@@ -245,7 +273,8 @@ set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 view(-90,90); % vertical direction is X axis, horizontal direction is Y axis.
 
 
-% plot the vertical projection of sources, surface and downhole arrays
+
+%% plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to X axis.
 if para.mulp
     h1size = get(h1,'Position');  % get the size of the first subplot
@@ -270,6 +299,10 @@ if ~isempty(rwlxy)
         plot(rwly,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
     end
 end
+if isfield(para,'marker') && ~isempty(para.marker)
+    % plot markers
+    plot(marker.y,marker.z,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
+end
 if ~para.mulp
     axis equal;
 end
@@ -286,7 +319,8 @@ axis ij;xlabel('East (km)','FontWeight','bold');ylabel('Depth (km)','FontWeight'
 set(gca,'XMinorGrid','on');set(gca,'YMinorGrid','on');
 
 
-% plot the vertical projection of sources, surface and downhole arrays
+
+%% plot the vertical projection of sources, surface and downhole arrays
 % project on the middle of the model and perpendicular to Y axis.
 if para.mulp
     % plot the horizontal and vertical profiles in one figure
@@ -305,6 +339,10 @@ if para.mulp
             rwlx=rwlpx(iw)*ones(size(rwlz(iw,:)));
             plot(rwlz(iw,:),rwlx,'bv','markersize',wmksize);hold on; % downhole arrays
         end
+    end
+    if isfield(para,'marker') && ~isempty(para.marker)
+        % plot markers
+        plot(marker.z,marker.x,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
     end
     if xc(2)>xc(1)
         ylim([xc(1) xc(2)]);
@@ -335,6 +373,10 @@ else
             plot(rwlx,rwlz(iw,:),'bv','markersize',wmksize);hold on; % downhole arrays
         end
     end
+    if isfield(para,'marker') && ~isempty(para.marker)
+        % plot markers
+        plot(marker.x,marker.z,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
+    end
     axis equal;
     if xc(2)>xc(1)
         xlim([xc(1) xc(2)]);
@@ -355,8 +397,15 @@ if para.mulp
     subplot('Position',[0.6 0.1 0.3 0.3]);
     plot(1,5,'b.','markersize',rmksize); hold on;
     text(1.2,5,'Station','FontWeight','bold');
-    plot(1,4.5,'rp','markersize',smksize); hold on;
-    text(1.2,4.5,'Source','FontWeight','bold');
+    if ~isempty(soup)
+        plot(1,4.5,'rp','markersize',smksize); hold on;
+        text(1.2,4.5,'Source','FontWeight','bold');
+    end
+    if isfield(para,'marker') && ~isempty(para.marker)
+        % plot markers
+        plot(1,4,'go','markersize',para.marker.sz,'MarkerFaceColor','g');hold on;
+        text(1.2,4,para.marker.name,'FontWeight','bold');
+    end
     xlim([0.8,3]);ylim([2,5.3]);
     axis off;
 end

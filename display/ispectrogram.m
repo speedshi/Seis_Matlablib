@@ -1,4 +1,4 @@
-function ispectrogram(seismic,i)
+function ispectrogram(seismic,i,window)
 % This function is used to show the spectrogram of the i-th seismic data;
 %
 % INPUT--------------------------------------------------------------------
@@ -11,11 +11,15 @@ function ispectrogram(seismic,i)
 % seismic.network: string, the name of the network;
 % seismic.component: character, the name of the data component (usually N, E or Z);
 % i: scalar, specifiy to show the spectrogrma of which station;
+% window: the time window in second for STFT, default is 1 second;
 
 
-% set default parameter
-if nargin <2
-   i=1;
+% set default parameters
+if nargin == 1
+    i=1;
+    window=1; % time window of STFT, in second
+elseif nargin == 2
+    window=1; % time window of STFT, in second
 end
 
 i=round(i);  % index should be an integer
@@ -31,7 +35,6 @@ set(gca,'XTick',[]);
 axsize_1=get(h1,'Position'); % axis position of figure 1
 
 % show the spectrogram
-window=1; % time window of STFT, in second
 subplot(2,1,2);
 show_spectrogram(seismic.data(i,:),seismic.dt,window);
 title("Spectrogram of station: "+seismic.name{i});

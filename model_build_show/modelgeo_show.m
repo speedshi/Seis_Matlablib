@@ -1,4 +1,4 @@
-function search=modelgeo_show(file_stations,file_velocity,search,earthquake,select)
+function search=modelgeo_show(file_stations,file_velocity,search,earthquake,select,para)
 % This function is used to dispaly the geometries of the model and
 % stations.
 % Units: meter, m/s, degree;
@@ -103,9 +103,9 @@ else
     srar=[];
 end
 
-
+para.sname = stations.name;
 % plot the model geometry
-plotgeo([],[],[],lydp,stations.north,stations.east,stations.depth,[],[],srar,seisp);
+plotgeo([],[],[],lydp,stations.north,stations.east,stations.depth,[],[],srar,seisp,12,10,4,para);
 
 
 end

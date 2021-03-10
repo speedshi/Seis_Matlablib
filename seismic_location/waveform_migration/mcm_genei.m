@@ -44,6 +44,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % mcm.earthquake.north: north coordinate in meter;
 % mcm.earthquake.depth: depth coordinate in meter;
 % mcm.earthquake.t0: origin time relative to the starting time of seismic data, in second;
+% mcm.earthquake.time: origin time of earthquake in datetime format;
 % precision: 'single' or 'double', specify the precision of the output
 % binary files.
 %
@@ -312,10 +313,13 @@ switch mcm.run
         % check if there is input earthquake information
         if isfield(mcm,'earthquake')
             earthquake = mcm.earthquake;
-            if isa(earthquake.t0,'datetime')
+            if isfield(earthquake,'t0') && isa(earthquake.t0,'datetime')
                 % if origin time is in datetime format, then transfor it in 
                 % second relative to the starting time of seismic data.
-                earthquake.t0 = second(earthquake.t0-mcm.datat0);
+                earthquake.t0 = seconds(earthquake.t0-mcm.datat0);
+            elseif isfield(earthquake,'time')
+                % experss origin time of earthquake relative to the starting time of seismic data, in second
+                earthquake.t0 = seconds(earthquake.time-mcm.datat0);
             end
         else
             earthquake = [];
