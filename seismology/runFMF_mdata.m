@@ -1,4 +1,4 @@
-function cc_sum = runFMF_mdata(components,sname_pick,weights,templates,moveouts,sdata_tag,ofile)
+function [cc_sum, para] = runFMF_mdata(components,sname_pick,weights,templates,moveouts,sdata_tag,ofile)
 % This funtion is to format the seismic data and run FMF.
 % INPUT:
 %      components: cell array, specify the seismic data components for
@@ -14,7 +14,8 @@ function cc_sum = runFMF_mdata(components,sname_pick,weights,templates,moveouts,
 %      ofile: string, output filename including path, if [], not save file.
 %
 % OUTPUT:
-%       A '.mat' file which contains FMF results.
+%       '.mat' file which contains FMF results.
+%       para: structure, containing timing information.
 
 
 n_components = length(components);  % total number of components
@@ -27,7 +28,7 @@ for ic = 1:n_components
     fname_seis = cell(n_stations_pick,1);
     for ist = 1:n_stations_pick
         % set file names of seismic data
-        fname_seis{ist} = [sdata_tag sprintf('IV.%s..HH%s.SAC',sname_pick{ist},components{ic})];
+        fname_seis{ist} = [sdata_tag sprintf('/IV.%s..HH%s.SAC',sname_pick{ist},components{ic})];
     end
     
     seismic_temp = read_seis(fname_seis,components{ic});  % load seismic data
@@ -74,12 +75,12 @@ end
 step = 1;
 weights = weights / sum(weights(:));  % sum(weights) should be 1
 [cc_sum] = fast_matched_filter(templates, moveouts, weights, data, step);
-
+para.t0 = seismic.t0;
+para.dt = seismic.dt;
+    
 
 %% save results of this day--------------------------------------------
 if ofile
-    para.t0 = seismic.t0;
-    para.dt = seismic.dt;
     save(ofile,'cc_sum','weights','para','-v7.3');
 end
 

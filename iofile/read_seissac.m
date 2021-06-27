@@ -48,7 +48,7 @@ for ii = 1:n_file
         if ~exist('time_1','var')
             time_1 = datetime(t0,'ConvertFrom','datenum');  % begin time
             time_2 = time_1 + seconds(header.DELTA*(header.NPTS-1));  % end time
-        else    
+        else
             temp_1 = datetime(t0,'ConvertFrom','datenum');  % begin time
             temp_2 = temp_1 + seconds(header.DELTA*(header.NPTS-1));  % end time
             time_1 = max(time_1,temp_1);
@@ -65,6 +65,10 @@ for ii = 1:n_file
 end
 
 
+if ~exist('time_1','var')
+    rethrow(ME)
+end
+
 seismic.t0 = time_1; % starting time of all the traces
 seismic.NPTS = round(seconds(time_2-time_1)*seismic.fe)+1; % total number of time samples
 
@@ -76,7 +80,7 @@ for ii=1:n_file
         seismic.component{ii}=header.KCMPNM; % component name of the data
         seismic.name{ii}=header.KSTNM; % name of the station
         temp = datetime(t0,'ConvertFrom','datenum');
-
+        
         id1 = round(seconds(seismic.t0-temp)*seismic.fe)+1;
         id2 = id1 + seismic.NPTS - 1;
         if strcmp(seismic.component{ii}(end),'Z') || strcmp(seismic.component{ii}(end),'z')
@@ -99,7 +103,7 @@ for ii=1:n_file
             elseif strcmp(comp(end),'E') || strcmp(comp(end),'e')
                 seismic.edata(ii,:) = NaN(seismic.NPTS,1);
             end
-
+            
             continue;
         else
             rethrow(ME)
