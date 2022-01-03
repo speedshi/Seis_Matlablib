@@ -211,7 +211,7 @@ Simply add the whole folder including all subfolders to you Matlab path.
 6. save_FMFdata: 保存FMF得到的检测结果，包括检测到的事件的事件和叠加相关系数
 
 ## Reference
-If you use this package in your work, please cite the fellowing paper in your documents.  
+If you use this package in your work, please cite the fellowing papers in your documents.  
 
 Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.  
 
