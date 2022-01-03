@@ -103,7 +103,7 @@
 17. plot_evesta: 显示地震台站和地震事件的平面分布图
 
 ### seismic_location
-**地震定位方法**
+**地震定位方法**  
 (1) waveform_migration: 基于波形偏移的地震定位方法
 1. stack_kernelf: 计算输入数据沿特定滑动时窗的特征函数
 2. wavefmstk: 计算特征函数的叠加结果
