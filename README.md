@@ -212,9 +212,11 @@ Simply add the whole folder including all subfolders to you Matlab path.
 
 ## Reference
 If you use this package in your work, please cite the fellowing paper in your documents.  
-```
-Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.
-```
+
+Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.  
+Shi, P., Angus, D., Rost, S., Nowacki, A., & Yuan, S. (2019). Automated seismic waveform location using multichannel coherency migration (MCM)–I: theory. Geophysical Journal International, 216(3), 1842-1866.  
+Shi, P., Nowacki, A., Rost, S., & Angus, D. (2019). Automated seismic waveform location using Multichannel Coherency Migration (MCM)—II. Application to induced and volcano-tectonic seismicity. Geophysical Journal International, 216(3), 1608-1632.
+
 ```
 @article{shi2018microseismic,
   title={Microseismic full waveform modeling in anisotropic media with moment tensor implementation},
@@ -225,6 +227,26 @@ Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full 
   pages={567--611},
   year={2018},
   publisher={Springer}
+}
+@article{shi2019automated,
+  title={Automated seismic waveform location using multichannel coherency migration (MCM)--I: theory},
+  author={Shi, Peidong and Angus, Doug and Rost, Sebastian and Nowacki, Andy and Yuan, Sanyi},
+  journal={Geophysical Journal International},
+  volume={216},
+  number={3},
+  pages={1842--1866},
+  year={2019},
+  publisher={Oxford University Press}
+}
+@article{shi2019automated,
+  title={Automated seismic waveform location using Multichannel Coherency Migration (MCM)—II. Application to induced and volcano-tectonic seismicity},
+  author={Shi, Peidong and Nowacki, Andy and Rost, Sebastian and Angus, Doug},
+  journal={Geophysical Journal International},
+  volume={216},
+  number={3},
+  pages={1608--1632},
+  year={2019},
+  publisher={Oxford University Press}
 }
 ```
 
