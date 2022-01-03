@@ -49,16 +49,16 @@ Simply add the whole folder including all subfolders to you Matlab path.
 7. example_main_generate_waveforms: 调用模拟程序合成数据的示例代码
 8. example_model.dat: 模型文件的示例
 9. example_receiver.dat: 台站信息文件的示例
-10. example_source.dat: 震源和模拟参数文件的示例
-(1) homogeneous 均匀介质中的波场模拟
+10. example_source.dat: 震源和模拟参数文件的示例  
+(1) homogeneous 均匀介质中的波场模拟  
 1. calninum: 计算Aki & Richards Eq 4.29 的解析解中近场的积分项，使用数值积分法
 2. calnint:  计算Aki & Richards Equation 4.29 中的近场积分项，使用解析雷克子波
 3. gsynwhomo: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场
 4. gsynwhomo_rickerw: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场，使用解析雷克子波
 5. homogreenf:  利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场,以脉冲为震源时间函数，计算出的是the Green's function
 6. homogreenfne:  利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的近场波场,以脉冲为震源时间函数，计算出的是近场the Green's function (近场+中间场)
-7. homogreenffa: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的远场波场,以脉冲为震源时间函数，计算出的是远场the Green's function
-(2) layer 层状介质中的波场模拟
+7. homogreenffa: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的远场波场,以脉冲为震源时间函数，计算出的是远场the Green's function  
+(2) layer 层状介质中的波场模拟  
 1. gsynwavefk/wavefk: 调用fk函数，实现层状介质中的反射率法正演模拟, 两个函数的输入参数略有不同。gsynwavefk函数更通用一些，更推荐使用该函数。
 
 
