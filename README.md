@@ -50,7 +50,7 @@ Matlab library which contains various functions and modules for seismology studi
 (1) homogeneous 均匀介质中的波场模拟
 1. calninum: 计算Aki & Richards Eq 4.29 的解析解中近场的积分项，使用数值积分法
 2. calnint:  计算Aki & Richards Equation 4.29 中的近场积分项，使用解析雷克子波
-3.  gsynwhomo: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场
+3. gsynwhomo: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场
 4. gsynwhomo_rickerw: 利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场，使用解析雷克子波
 5. homogreenf:  利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的波场,以脉冲为震源时间函数，计算出的是the Green's function
 6. homogreenfne:  利用Aki & Richards Eq 4.29 (解析解)计算均匀介质中的近场波场,以脉冲为震源时间函数，计算出的是近场the Green's function (近场+中间场)
@@ -139,7 +139,7 @@ Matlab library which contains various functions and modules for seismology studi
 4. cmapmtrdpos: 64*3, 兰-黄-红
 5. cmapmtrdp2: 256*3, 蓝-兰-黄-红
 6. cmapmtrdp: 64*3, 蓝-兰-黄-红
-7.  cmapmtv: 64*3, 蓝-兰-黄-正红
+7. cmapmtv: 64*3, 蓝-兰-黄-正红
 8. cmapmtv2: 64*3, 蓝-兰-黄-正红, 兰黄占比增大
 9. cmapmtv3: 64*3, 蓝-兰-黄-正红, 兰黄占比增大
 10. cmapmtv4: 64*3, 蓝-兰-黄-正红, 兰黄占比增大
