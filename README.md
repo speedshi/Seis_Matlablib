@@ -207,6 +207,22 @@
 5. gene_FMFtemplate: 根据P/S波的拾取结果为FMF准备template
 6. save_FMFdata: 保存FMF得到的检测结果，包括检测到的事件的事件和叠加相关系数
 
+## Reference
+If you use this package in your work, please cite the fellowing paper in your documents.  
+Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.
+
+@article{shi2018microseismic,
+  title={Microseismic full waveform modeling in anisotropic media with moment tensor implementation},
+  author={Shi, Peidong and Angus, Doug and Nowacki, Andy and Yuan, Sanyi and Wang, Yanyan},
+  journal={Surveys in Geophysics},
+  volume={39},
+  number={4},
+  pages={567--611},
+  year={2018},
+  publisher={Springer}
+}
+
+
 ## Licence (GPLv3)
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For more details, see in the license file.
 
