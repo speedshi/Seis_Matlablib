@@ -1,21 +1,21 @@
 # Seis_Matlablib
-Matlab library which contains various functions and modules for seismology studies.
+**Matlab library which contains various functions and modules for seismology studies.**
 
 ## Function list
 ### travel_times
-计算特定地震相位的旅行时
+**计算特定地震相位的旅行时**
 1. tvtcalrt_ly: 计算层状介质中的直达波旅行时和take-off angle
-1. tvtcalrt_homo: 计算均匀介质中的直达波旅行时和take-off angle
+2. tvtcalrt_homo: 计算均匀介质中的直达波旅行时和take-off angle
 
 ### model_build_show
-用于构建和显示模型的函数
+**用于构建和显示模型的函数**
 1. plotgeo: 用于显示三维层状介质模型，并在模型中同时显示震源、接收器阵列（包括表面阵列和垂直井接收阵列）的位置
 2. plotmpsd: 用于绘制层状介质模型的速度、密度和衰减因子剖面
 3. intpmodel3: 对输入的三维模型进行三维插值，得到符合期望(维度)大小的三维模型。注意输入三维模型的第一维为X，第二维为Y，第三维为Z
 4. modelgeo_show: 根据输入参数，显示出相应模型和成像区域
 
 ### iofile
-用于输入输出文件的函数
+**用于输入输出文件的函数**
 1. equihomo: 计算并输出层状介质的均方根速度
 2. wrtasgeo: 输出震源，接收器位置信息
 3. wrtmdf: 输出层状介质的速度、密度和衰减因子等信息，输出文件格式为fk软件输入格式
@@ -36,7 +36,7 @@ Matlab library which contains various functions and modules for seismology studi
 
 
 ### seismic_modeling
-用于地震正演模拟的函数
+**用于地震正演模拟的函数**
 1. gsynwihl: 均匀介质或层状介质中的波形模拟。可以根据模型参数，自动选择调用均匀介质或层状介质的相关正演函数进行正演模拟。模型参数文件（震源文件、速度模型文件、接收器文件）的格式参照“file_format_description”。
 2. rdmodelf: 读入均匀或层状介质模型参数文件(速度、密度、层厚度、衰减、起始深度)
 3. rdreceiverf: 读入接收器参数文件
@@ -61,7 +61,7 @@ Matlab library which contains various functions and modules for seismology studi
 
 
 ### general_math_func
-一般数学函数
+**一般数学函数**
 1. corrcoefn: 计算一个输入矩阵的n-维相关系数，n为矩阵的列数
 2. corrcoefnv: 计算一个输入矩阵的多维相关系数
 3. mycorrcoef: 计算输入矩阵的相关系数矩阵
@@ -83,7 +83,7 @@ Matlab library which contains various functions and modules for seismology studi
 
 
 ### display
-画图及显示相关函数
+**画图及显示相关函数**
 1. disp_3dslice: 显示三个相互正交的剖面
 2. migmaxplt: 显示一个输入4D 数据的最大值剖面和沿各维度的投影剖面，4D数据格式：T-X-Y-Z
 3. disprs: 显示波剖面，即record section, 以震源接收器的水平距离为准排列道集
@@ -103,37 +103,36 @@ Matlab library which contains various functions and modules for seismology studi
 17. plot_evesta: 显示地震台站和地震事件的平面分布图
 
 ### seismic_location
-地震定位方法
-1. waveform_migration: 基于波形偏移的地震定位方法
-
-3.1 stack_kernelf: 计算输入数据沿特定滑动时窗的特征函数
-4.2 wavefmstk: 计算特征函数的叠加结果
-5.3 mgrsprofdisp: 显示定位结果的XYZ剖面，并于地震目录中的结果对比
-6.4 event_optm: 寻找偏移结果中的地震事件，采用时间、空间间隔的方式
-7.5 extractevt: 寻找偏移结果中的地震事件，提取距离地震目录中的事件一定时间范围内的偏移最大值
-8.6 locreson: 寻找偏移结果中的地震事件，提取在一定空间范围内持续一段时间的事件
-9.7 findefmg: 寻找偏移结果中的地震事件，采用阈值和间隔时间的方式
-10.8 gchkrs: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件
-11.9 profdisppw: 显示定位结果的XYZ剖面，并与地震目录中的地震事件一一对应
-12.10 gpltlocrs: 在偏移记录上显示对应的定位结果（对应局部峰值）
-13.11 mcm_genei: 读入各种数据，生成MCM Fortran程序所需的输入文件，并运行相应MCM程序
-14.12 gene_soup: 生成偏移成像点的位置信息，并输出MCM需要的对应二进制文件
-15.13 gene_traveltime: 生成旅行时表，并根据需要决定是否输出旅行时表二进制文件
-16.14 gene_wavetime: 根据输入的波形数据生成MCM需要的波形二进制文件，并提取其对应的旅行时表并输出相应二进制文件
-17.15 gene_migpara: 生成MCM所需的文本格式参数文件
-18.16 runmcm_matlab_test: 根据输入的地震位置运行MCM matlab测试版本，会显示偏移剖面及记录剖面，用于判断偏移结果的好坏，可用于测试参数(如频率和时窗)的选择
-19.17 waveform_migration_kernel: MCM偏移定位核心程序, use P+S phases
-20.18 waveform_migration_kernel_x: MCM偏移定位核心程序, use only one phase
-21.19 mcm_test_para.m: run MCM on a single position (soure location) to obtain the stacking trace to test the MCM parameters, such as frequency band, window size and seismic phases
-22.20 get_earthquake: obtain the specified earthquake information from the catalog
-23.21 mcm_test_freqband: test mcm results on different frequency bands
-24.22 stkcorrcoef: calculate correlation coefficient matrix and stack the Ccs
-25.23 waveforms_show: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件,台站名和时间同时显示
-26.24 gene_mcmifiles: 生成MCM Fortran 程序需要的各种参数文件（e.g. traveltime table, waveform file, soupos file, migpara）
-27.25 detmst0: 生成搜索的orgin times 序列
+**地震定位方法**
+(1) waveform_migration: 基于波形偏移的地震定位方法
+1. stack_kernelf: 计算输入数据沿特定滑动时窗的特征函数
+2. wavefmstk: 计算特征函数的叠加结果
+3. mgrsprofdisp: 显示定位结果的XYZ剖面，并于地震目录中的结果对比
+4. event_optm: 寻找偏移结果中的地震事件，采用时间、空间间隔的方式
+5. extractevt: 寻找偏移结果中的地震事件，提取距离地震目录中的事件一定时间范围内的偏移最大值
+6. locreson: 寻找偏移结果中的地震事件，提取在一定空间范围内持续一段时间的事件
+7. findefmg: 寻找偏移结果中的地震事件，采用阈值和间隔时间的方式
+8. gchkrs: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件
+9. profdisppw: 显示定位结果的XYZ剖面，并与地震目录中的地震事件一一对应
+10. gpltlocrs: 在偏移记录上显示对应的定位结果（对应局部峰值）
+11. mcm_genei: 读入各种数据，生成MCM Fortran程序所需的输入文件，并运行相应MCM程序
+12. gene_soup: 生成偏移成像点的位置信息，并输出MCM需要的对应二进制文件
+13. gene_traveltime: 生成旅行时表，并根据需要决定是否输出旅行时表二进制文件
+14. gene_wavetime: 根据输入的波形数据生成MCM需要的波形二进制文件，并提取其对应的旅行时表并输出相应二进制文件
+15. gene_migpara: 生成MCM所需的文本格式参数文件
+16. runmcm_matlab_test: 根据输入的地震位置运行MCM matlab测试版本，会显示偏移剖面及记录剖面，用于判断偏移结果的好坏，可用于测试参数(如频率和时窗)的选择
+17. waveform_migration_kernel: MCM偏移定位核心程序, use P+S phases
+18. waveform_migration_kernel_x: MCM偏移定位核心程序, use only one phase
+19. mcm_test_para.m: run MCM on a single position (soure location) to obtain the stacking trace to test the MCM parameters, such as frequency band, window size and seismic phases
+20. get_earthquake: obtain the specified earthquake information from the catalog
+21. mcm_test_freqband: test mcm results on different frequency bands
+22. stkcorrcoef: calculate correlation coefficient matrix and stack the Ccs
+23. waveforms_show: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件,台站名和时间同时显示
+24. gene_mcmifiles: 生成MCM Fortran 程序需要的各种参数文件（e.g. traveltime table, waveform file, soupos file, migpara）
+25. detmst0: 生成搜索的orgin times 序列
 
 ### colormaps
-各种色标
+**各种色标**
 1. mycolor1.mat: 64*3, 蓝-黄-红
 2. cmapmtrdneg.mat: 256*3, 蓝-黄
 3. cmapmtdpos2: 256*3, 兰-黄-红
@@ -146,7 +145,7 @@ Matlab library which contains various functions and modules for seismology studi
 10. cmapmtv4: 64*3, 蓝-兰-黄-正红, 兰黄占比增大
 
 ### downloads
-下载的各种函数和函数库
+**下载的各种函数和函数库**
 1. borders: 显示世界各个国家的边界
 2. color_map: 显示红蓝色标(地震剖面常用色标)
 3. filter1: 对输入信号进行滤波
@@ -160,13 +159,13 @@ Matlab library which contains various functions and modules for seismology studi
 11. fun_for_piero: clustering according to the input row and column indices of the upper triangular part of the correlation-coefficient matrix
 
 ### noise
-噪音有关函数
+**噪音有关函数**
 1. addnoinsr: 按照噪信比（振幅比）向数据中加入指定噪音
 2. pnoise: 向数据中加入一定信噪比的高斯随机噪音，信噪比以能量比表示
 3. pnoisem: 向数据中加入一定噪信比的高斯随机噪音，噪信比以振幅比表示
 
 ### wavelet
-子波相关函数
+**子波相关函数**
 1. rickerw: 生成雷克子波，子波时延1.1/f+t0
 2. rickerwd: 生成雷克子波导数（解析），子波时延1.1/f+t0
 3. rickerwi: 生成雷克子波积分（数值），子波时延1.1/f+t0
@@ -174,11 +173,11 @@ Matlab library which contains various functions and modules for seismology studi
 5. wavlintp: 将输入的震源时间函数插值加密，缩短时间间隔
 
 ### seismic source
-震源相关函数
+**震源相关函数**
 1. fgeom2mt: 由断层参数(走向、倾向、倾角)生成地震矩张量
 
 ### source radiation pattern
-震源辐射模式相关函数
+**震源辐射模式相关函数**
 1. mtrdpfas: 画图相关函数，在画震源辐射模式图时，将坐标轴原点置于中心
 2. mtrdpfax: 画图相关函数，在画震源辐射模式图时，将坐标轴原点置于中心；根据要画图像的数值自动选择合适的色标。
 3. mtradiationv: 画远场P, S波的震源辐射模式，以矢量图(箭头)的形式展现
@@ -191,7 +190,7 @@ Matlab library which contains various functions and modules for seismology studi
 
 
 ### data_process
-一般性数据处理函数
+**一般性数据处理函数**
 1. sltordotpsta: 按照与特定点的距离排列地震台站
 2. stanamnum: 计算在输入的HFD5文件里，在特定station文件中的台站的数目和名称
 3. wave_extract: extract waveforms along arrival times
@@ -200,7 +199,7 @@ Matlab library which contains various functions and modules for seismology studi
 6. seisext: 根据输入的参数提取地震数据
 
 ### seismology
-地震学相关函数
+**地震学相关函数**
 1. check_stations: 检测地震台站在一年中某个时间段是否有数据
 2. catana_dist: 计算并显示地震目录中的地震时间距某点的距离
 3. runFMF_mdata: 调用FMF的wrapper，注意其特定的数据输入模式
