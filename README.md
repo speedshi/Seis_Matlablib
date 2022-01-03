@@ -105,31 +105,32 @@ Matlab library which contains various functions and modules for seismology studi
 ### seismic_location
 地震定位方法
 1. waveform_migration: 基于波形偏移的地震定位方法
-1.1 stack_kernelf: 计算输入数据沿特定滑动时窗的特征函数
-1.2 wavefmstk: 计算特征函数的叠加结果
-1.3 mgrsprofdisp: 显示定位结果的XYZ剖面，并于地震目录中的结果对比
-1.4 event_optm: 寻找偏移结果中的地震事件，采用时间、空间间隔的方式
-1.5 extractevt: 寻找偏移结果中的地震事件，提取距离地震目录中的事件一定时间范围内的偏移最大值
-1.6 locreson: 寻找偏移结果中的地震事件，提取在一定空间范围内持续一段时间的事件
-1.7 findefmg: 寻找偏移结果中的地震事件，采用阈值和间隔时间的方式
-1.8 gchkrs: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件
-1.9 profdisppw: 显示定位结果的XYZ剖面，并与地震目录中的地震事件一一对应
-1.10 gpltlocrs: 在偏移记录上显示对应的定位结果（对应局部峰值）
-1.11 mcm_genei: 读入各种数据，生成MCM Fortran程序所需的输入文件，并运行相应MCM程序
-1.12 gene_soup: 生成偏移成像点的位置信息，并输出MCM需要的对应二进制文件
-1.13 gene_traveltime: 生成旅行时表，并根据需要决定是否输出旅行时表二进制文件
-1.14 gene_wavetime: 根据输入的波形数据生成MCM需要的波形二进制文件，并提取其对应的旅行时表并输出相应二进制文件
-1.15 gene_migpara: 生成MCM所需的文本格式参数文件
-1.16 runmcm_matlab_test: 根据输入的地震位置运行MCM matlab测试版本，会显示偏移剖面及记录剖面，用于判断偏移结果的好坏，可用于测试参数(如频率和时窗)的选择
-1.17 waveform_migration_kernel: MCM偏移定位核心程序, use P+S phases
-1.18 waveform_migration_kernel_x: MCM偏移定位核心程序, use only one phase
-1.19 mcm_test_para.m: run MCM on a single position (soure location) to obtain the stacking trace to test the MCM parameters, such as frequency band, window size and seismic phases
-1.20 get_earthquake: obtain the specified earthquake information from the catalog
-1.21 mcm_test_freqband: test mcm results on different frequency bands
-1.22 stkcorrcoef: calculate correlation coefficient matrix and stack the Ccs
-1.23 waveforms_show: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件,台站名和时间同时显示
-1.24 gene_mcmifiles: 生成MCM Fortran 程序需要的各种参数文件（e.g. traveltime table, waveform file, soupos file, migpara）
-1.25 detmst0: 生成搜索的orgin times 序列
+
+3.1 stack_kernelf: 计算输入数据沿特定滑动时窗的特征函数
+4.2 wavefmstk: 计算特征函数的叠加结果
+5.3 mgrsprofdisp: 显示定位结果的XYZ剖面，并于地震目录中的结果对比
+6.4 event_optm: 寻找偏移结果中的地震事件，采用时间、空间间隔的方式
+7.5 extractevt: 寻找偏移结果中的地震事件，提取距离地震目录中的事件一定时间范围内的偏移最大值
+8.6 locreson: 寻找偏移结果中的地震事件，提取在一定空间范围内持续一段时间的事件
+9.7 findefmg: 寻找偏移结果中的地震事件，采用阈值和间隔时间的方式
+10.8 gchkrs: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件
+11.9 profdisppw: 显示定位结果的XYZ剖面，并与地震目录中的地震事件一一对应
+12.10 gpltlocrs: 在偏移记录上显示对应的定位结果（对应局部峰值）
+13.11 mcm_genei: 读入各种数据，生成MCM Fortran程序所需的输入文件，并运行相应MCM程序
+14.12 gene_soup: 生成偏移成像点的位置信息，并输出MCM需要的对应二进制文件
+15.13 gene_traveltime: 生成旅行时表，并根据需要决定是否输出旅行时表二进制文件
+16.14 gene_wavetime: 根据输入的波形数据生成MCM需要的波形二进制文件，并提取其对应的旅行时表并输出相应二进制文件
+17.15 gene_migpara: 生成MCM所需的文本格式参数文件
+18.16 runmcm_matlab_test: 根据输入的地震位置运行MCM matlab测试版本，会显示偏移剖面及记录剖面，用于判断偏移结果的好坏，可用于测试参数(如频率和时窗)的选择
+19.17 waveform_migration_kernel: MCM偏移定位核心程序, use P+S phases
+20.18 waveform_migration_kernel_x: MCM偏移定位核心程序, use only one phase
+21.19 mcm_test_para.m: run MCM on a single position (soure location) to obtain the stacking trace to test the MCM parameters, such as frequency band, window size and seismic phases
+22.20 get_earthquake: obtain the specified earthquake information from the catalog
+23.21 mcm_test_freqband: test mcm results on different frequency bands
+24.22 stkcorrcoef: calculate correlation coefficient matrix and stack the Ccs
+25.23 waveforms_show: 显示定位结果的记录剖面，帮助确认是否为明显的真实地震事件,台站名和时间同时显示
+26.24 gene_mcmifiles: 生成MCM Fortran 程序需要的各种参数文件（e.g. traveltime table, waveform file, soupos file, migpara）
+27.25 detmst0: 生成搜索的orgin times 序列
 
 ### colormaps
 各种色标
@@ -207,7 +208,7 @@ Matlab library which contains various functions and modules for seismology studi
 5. gene_FMFtemplate: 根据P/S波的拾取结果为FMF准备template
 6. save_FMFdata: 保存FMF得到的检测结果，包括检测到的事件的事件和叠加相关系数
 
-## Licence (MIT licence)
+## Licence (GPLv3)
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For more details, see in the license file.
 
 ## Contact information 
