@@ -231,6 +231,9 @@ Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full 
 ## Licence (GPLv3)
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For more details, see in the license file.
 
+## Contributing
+I'm happy for anybody who wants to use and contribute to this repo. If you would like to contribute to the project as a developer, please feel free to contact me and create Pull Requests.
+
 ## Contact information 
 Copyright(C) 2021 Peidong Shi
 
