@@ -1,6 +1,9 @@
 # Seis_Matlablib
 Matlab library which contains various functions and modules for seismology studies.
 
+## Installation
+Simply add the whole folder including all subfolders to you Matlab path.
+
 ## Function list
 ### travel_times
 **计算特定地震相位的旅行时**
