@@ -256,7 +256,8 @@ Shi, P., Nowacki, A., Rost, S., & Angus, D. (2019). Automated seismic waveform l
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. For more details, see in the license file.
 
 ## Contributing
-I'm happy for anybody who wants to use and contribute to this repo. If you would like to contribute to the project as a developer, please feel free to contact me and create Pull Requests. If you have any questions and suggestions about the functions in this package, please also feel free to contact me.
+I'm happy for anybody who wants to use and contribute to this repo. If you would like to contribute to the project as a developer, please feel free to contact me and create Pull Requests.  
+If you have any questions and suggestions about the functions in this package, please also feel free to contact me.
 
 ## Contact information 
 Copyright(C) 2021 Peidong Shi  
