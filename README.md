@@ -214,7 +214,9 @@ Simply add the whole folder including all subfolders to you Matlab path.
 If you use this package in your work, please cite the fellowing paper in your documents.  
 
 Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.  
+
 Shi, P., Angus, D., Rost, S., Nowacki, A., & Yuan, S. (2019). Automated seismic waveform location using multichannel coherency migration (MCM)–I: theory. Geophysical Journal International, 216(3), 1842-1866.  
+
 Shi, P., Nowacki, A., Rost, S., & Angus, D. (2019). Automated seismic waveform location using Multichannel Coherency Migration (MCM)—II. Application to induced and volcano-tectonic seismicity. Geophysical Journal International, 216(3), 1608-1632.
 
 ```
@@ -257,9 +259,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 I'm happy for anybody who wants to use and contribute to this repo. If you would like to contribute to the project as a developer, please feel free to contact me and create Pull Requests. If you have any questions and suggestions about the functions in this package, please also feel free to contact me.
 
 ## Contact information 
-Copyright(C) 2021 Peidong Shi
-
-Author: Peidong Shi
-
+Copyright(C) 2021 Peidong Shi  
+Author: Peidong Shi  
 Email: peidong.shi@sed.ethz.ch or speedshi@hotmail.com
 
