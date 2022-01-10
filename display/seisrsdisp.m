@@ -22,7 +22,7 @@ nrec=size(data,2);
 
 % set default station code and data origin time if no input
 if nargin == 2
-    name=1:nrec;
+    name=[];
     t0=[];
     tp=[];
     ts=[];
@@ -58,9 +58,9 @@ elseif nargin == 8
     lw=1.0;
 end
 
-if isempty(name)
-    name=1:nrec;
-end
+% if isempty(name)
+%     name=1:nrec;
+% end
 
 if ~isempty(timerg)
     % select date in the defined time range
@@ -114,7 +114,9 @@ else
 end
 
 % set ylable
-set(gca,'ytick',1:nrec,'yticklabel',name);
+if ~isempty(name)
+    set(gca,'ytick',1:nrec,'yticklabel',name);
+end
 ylabel('Station code');axis tight;
 
 end
