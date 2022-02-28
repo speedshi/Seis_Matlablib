@@ -12,6 +12,8 @@ drm=bsxfun(@minus,data,mean(data)); % remove the mean values for each trace, i.e
 vmax=max(max(abs(drm)));
 if vmax~=0
     dd=drm/vmax;
+else
+    dd=drm;
 end
 figure;
 for ii=1:nrec
