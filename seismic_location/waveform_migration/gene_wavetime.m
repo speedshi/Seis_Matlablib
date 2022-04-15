@@ -34,6 +34,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % ffilter.freq: frequency band used to filter the seismic data, a vector containing 1 or 2 elements, in Hz
 % ffilter.type: filter type, can be 'low', 'bandpass', 'high', 'stop'
 % ffilter.order: order of Butterworth filter, for bandpass and bandstop designs are of order 2n
+% ffilter.method : filtering method, can be 'BW' (Butterworth) or 'DF' (digital filter);
 % precision: string, 'single' or 'double', specifiy the outout presicion;
 % fname_d: output filename for waveform data;
 % fname_p: output binary file name for P-wave traveltimes;
@@ -159,11 +160,7 @@ end
 % check if need filter seismic data
 f_nyqt=0.5*seismic.fe; % Nyquist frequency of seismic data
 if ~isempty(ffilter)
-    % apply Butterworth filter in frequency domain
-    
-    if ~isfield(ffilter,'order')
-        ffilter.order=4; % default filter order is 4
-    end
+    % apply filtering in frequency domain
     
     nfreq=length(ffilter.freq);
     switch nfreq
@@ -181,45 +178,70 @@ if ~isempty(ffilter)
             error('Incorrect input for frequency filter parameters.\n');
     end
     
-    [bb,aa]=butter(ffilter.order,ffilter.freq/f_nyqt,ffilter.type);
+    if strcmp(ffilter.method, 'BW')
+        % set Butterworth filter parameters
+        if ~isfield(ffilter,'order')
+            ffilter.order=4; % default filter order is 4
+        end
+        [bb,aa]=butter(ffilter.order,ffilter.freq/f_nyqt,ffilter.type);
+    end
+    
     for ir=1:n_sta
-        dftemp = filter(bb,aa,trace.data(ir,:));
-        if any(isnan(dftemp(:)))
-            % Butterworth filter does not work
-            % try another filter method
-            trace.data(ir,:)=bandpass(trace.data(ir,:), ffilter.freq, seismic.fe);
+        if strcmp(ffilter.method,'DF')
+            % digital filter
+            if strcmp(ffilter.type,'bandpass')
+                trace.data(ir,:)=bandpass(trace.data(ir,:), ffilter.freq, seismic.fe);
+            elseif strcmp(ffilter.type,'high')
+                trace.data(ir,:)=highpass(trace.data(ir,:), ffilter.freq, seismic.fe);
+            end
+        elseif strcmp(ffilter.method,'BW')
+            % Butterworth filter
+            trace.data(ir,:)=filter(bb,aa,trace.data(ir,:));
         else
-            trace.data(ir,:)=dftemp;
+            error('Incorrect input for frequency filter method.\n');
         end
         % if three-component data exist, do it!
         if isfield(trace,'zdata')
-            dftemp = filter(bb,aa,trace.zdata(ir,:));
-            if any(isnan(dftemp(:)))
-                % Butterworth filter does not work
-                % try another filter method
-                trace.zdata(ir,:) = bandpass(trace.zdata(ir,:), ffilter.freq, seismic.fe);
+            if strcmp(ffilter.method,'DF')
+                % digital filter
+                if strcmp(ffilter.type,'bandpass')
+                    trace.zdata(ir,:) = bandpass(trace.zdata(ir,:), ffilter.freq, seismic.fe);
+                elseif strcmp(ffilter.type,'high')
+                    trace.zdata(ir,:) = highpass(trace.zdata(ir,:), ffilter.freq, seismic.fe);
+                end
+            elseif strcmp(ffilter.method,'BW')
+                % Butterworth filter
+                trace.zdata(ir,:)=filter(bb,aa,trace.zdata(ir,:));
             else
-                trace.zdata(ir,:)=dftemp;
+                error('Incorrect input for frequency filter method.\n');
             end
         end
         if isfield(trace,'ndata')
-            dftemp = filter(bb,aa,trace.ndata(ir,:));
-            if any(isnan(dftemp(:)))
-                % Butterworth filter does not work
-                % try another filter method
-                trace.ndata(ir,:) = bandpass(trace.ndata(ir,:), ffilter.freq, seismic.fe);
+            if strcmp(ffilter.method,'DF')
+                % digital filter
+                if strcmp(ffilter.type,'bandpass')
+                    trace.ndata(ir,:) = bandpass(trace.ndata(ir,:), ffilter.freq, seismic.fe);
+                elseif strcmp(ffilter.type,'high')
+                    trace.ndata(ir,:) = highpass(trace.ndata(ir,:), ffilter.freq, seismic.fe);
+                end
+            elseif strcmp(ffilter.method,'BW')
+                % Butterworth filter
+                trace.ndata(ir,:)=filter(bb,aa,trace.ndata(ir,:));
             else
-                trace.ndata(ir,:)=dftemp;
+                error('Incorrect input for frequency filter method.\n');
             end
         end
         if isfield(trace,'edata')
-            dftemp = filter(bb,aa,trace.edata(ir,:));
-            if any(isnan(dftemp(:)))
-                % Butterworth filter does not work
-                % try another filter method
-                trace.edata(ir,:) = bandpass(trace.edata(ir,:), ffilter.freq, seismic.fe);
-            else
-                trace.edata(ir,:)=dftemp;
+            if strcmp(ffilter.method,'DF')
+                % digital filter
+                if strcmp(ffilter.type,'bandpass')
+                    trace.edata(ir,:) = bandpass(trace.edata(ir,:), ffilter.freq, seismic.fe);
+                elseif strcmp(ffilter.type,'high')
+                    trace.edata(ir,:) = highpass(trace.edata(ir,:), ffilter.freq, seismic.fe);
+                end
+            elseif strcmp(ffilter.method,'BW')
+                % Butterworth filter
+                trace.edata(ir,:)=filter(bb,aa,trace.edata(ir,:));
             end
         end
     end

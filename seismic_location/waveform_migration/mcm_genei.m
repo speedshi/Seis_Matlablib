@@ -38,6 +38,7 @@ function [trace,search,mcm]=mcm_genei(file,search,mcm,precision)
 % mcm.filter.freq: frequency band used to filter the seismic data, a vector containing 1 or 2 elements, in Hz
 % mcm.filter.type: filter type, can be 'low', 'bandpass', 'high', 'stop'
 % mcm.filter.order: order of Butterworth filter, for bandpass and bandstop designs are of order 2n
+% mcm.filter.method : filtering method, can be 'BW' (Butterworth) or 'DF' (digital filter);
 % mcm.utmstruct: struture, the UTM parameter for coordinate transfermation;
 % mcm.earthquake: structure, the input earthquake location for comparision;
 % mcm.earthquake.east: east coordinate in meter;
@@ -113,6 +114,11 @@ end
 % set filtering parameters
 if ~isfield(mcm,'filter')
     mcm.filter=[];
+else
+    if ~isfield(mcm.filter, 'method')
+        % set the default filtering method
+        mcm.filter.method = 'DF';
+    end
 end
 
 % set normalization range for showing the migration volume
