@@ -9,8 +9,8 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 %
 % If three-component data are avaliable, the program will also do the same
 % process (i.e. filtering) on these components. e.g.:
-% seismic.zdata: Z component; 
-% seismic.ndata: N component; 
+% seismic.zdata: Z component;
+% seismic.ndata: N component;
 % seismic.edata: E component;
 %
 % If empty file names ([]) are given, then do not output the corresponding
@@ -20,6 +20,7 @@ function trace=gene_wavetime(seismic,stations,ffilter,precision,fname_d,fname_p,
 % seismic: matlab structure, contains waveform information;
 % seismic.data: nrec*nt, seismic data;
 % seismic.name: cell array, 1*nrec, station names;
+% seismic.dt: scaler, the time sample interval of the data, in second;
 % seismic.fe: scaler, the sampling frequency of the data, in Hz;
 % seismic.t0: matlab datetime, the starting time of seismic data;
 % stations: matlab structure, contains station information;
@@ -165,7 +166,7 @@ if ~isempty(ffilter)
     end
     
     nfreq=length(ffilter.freq);
-    switch nfreq        
+    switch nfreq
         case 1
             if ~isfield(ffilter,'type')
                 ffilter.type='high';
@@ -182,25 +183,53 @@ if ~isempty(ffilter)
     
     [bb,aa]=butter(ffilter.order,ffilter.freq/f_nyqt,ffilter.type);
     for ir=1:n_sta
-        trace.data(ir,:)=filter(bb,aa,trace.data(ir,:));
+        dftemp = filter(bb,aa,trace.data(ir,:));
+        if any(isnan(dftemp(:)))
+            % Butterworth filter does not work
+            % try another filter method
+            trace.data(ir,:)=bandpass(trace.data(ir,:), ffilter.freq, seismic.fe);
+        else
+            trace.data(ir,:)=dftemp;
+        end
         % if three-component data exist, do it!
         if isfield(trace,'zdata')
-            trace.zdata(ir,:)=filter(bb,aa,trace.zdata(ir,:));
+            dftemp = filter(bb,aa,trace.zdata(ir,:));
+            if any(isnan(dftemp(:)))
+                % Butterworth filter does not work
+                % try another filter method
+                trace.zdata(ir,:) = bandpass(trace.zdata(ir,:), ffilter.freq, seismic.fe);
+            else
+                trace.zdata(ir,:)=dftemp;
+            end
         end
         if isfield(trace,'ndata')
-            trace.ndata(ir,:)=filter(bb,aa,trace.ndata(ir,:));
+            dftemp = filter(bb,aa,trace.ndata(ir,:));
+            if any(isnan(dftemp(:)))
+                % Butterworth filter does not work
+                % try another filter method
+                trace.ndata(ir,:) = bandpass(trace.ndata(ir,:), ffilter.freq, seismic.fe);
+            else
+                trace.ndata(ir,:)=dftemp;
+            end
         end
         if isfield(trace,'edata')
-            trace.edata(ir,:)=filter(bb,aa,trace.edata(ir,:));
+            dftemp = filter(bb,aa,trace.edata(ir,:));
+            if any(isnan(dftemp(:)))
+                % Butterworth filter does not work
+                % try another filter method
+                trace.edata(ir,:) = bandpass(trace.edata(ir,:), ffilter.freq, seismic.fe);
+            else
+                trace.edata(ir,:)=dftemp;
+            end
         end
     end
 end
 
+% obtain time sampling interval of seismic data
+trace.dt=seismic.dt;
+
 % sampling frequency
 trace.fe=seismic.fe;
-
-% obtain time sampling interval of seismic data
-trace.dt=1.0/seismic.fe;
 
 % output binary files
 % seismic data
